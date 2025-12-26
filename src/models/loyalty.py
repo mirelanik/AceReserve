@@ -31,7 +31,7 @@ class LoyaltyAccount(LoyaltyAccountBase, table=True):
     user_id: int = Field(foreign_key="users.id", unique=True)
     updated_at: datetime = Field(default_factory=datetime.now)
 
-    user: User = Relationship(back_populates="loyalty_accounts")
+    user: "User" = Relationship(back_populates="loyalty")
     logs: list["LoyaltyLog"] = Relationship(back_populates="account")
 
 
@@ -53,7 +53,7 @@ class LoyaltyLog(LoyaltyLogBase, table=True):
     account_id: int = Field(foreign_key="loyalty_accounts.id")
     created_at: datetime = Field(default_factory=datetime.now)
 
-    account: LoyaltyAccount = Relationship(back_populates="logs")
+    account: "LoyaltyAccount" = Relationship(back_populates="logs")
 
 
 class LoyaltyLogCreate(LoyaltyLogBase):

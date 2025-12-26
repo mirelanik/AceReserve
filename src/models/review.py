@@ -1,10 +1,11 @@
 from enum import Enum
 from datetime import datetime
 from sqlmodel import SQLModel, Field, Relationship
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 
 if TYPE_CHECKING:
     from .user import User
+    from .court import Court
 
 
 class ReviewTargetType(str, Enum):
@@ -25,8 +26,10 @@ class Review(ReviewBase, table=True):
     id: int | None = Field(default=None, primary_key=True)
     user_id: int = Field(foreign_key="users.id")
     created_at: datetime = Field(default_factory=datetime.now)
+    court_id: int | None = Field(default=None, foreign_key="courts.id")
 
-    user: User = Relationship(back_populates="reviews")
+    user: "User" = Relationship(back_populates="reviews")
+    court: Optional["Court"] = Relationship(back_populates="reviews")
 
 
 class ReviewCreate(ReviewBase):

@@ -42,7 +42,7 @@ class Reservation(ReservationBase, table=True):
     @property
     def user_name(self) -> str:
         return self.user.full_name
-    
+
 class ReservationCreate(ReservationBase):
     @field_validator("duration_minutes")
     @classmethod
@@ -60,3 +60,4 @@ class ReservationRead(ReservationBase):
     created_at: datetime
     user_name: str
     end_time: datetime
+    total_price: Decimal

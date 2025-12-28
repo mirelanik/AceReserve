@@ -31,7 +31,9 @@ class ExistingCourtError(AceReserveException):
 
 
 class ForbiddenActionError(AceReserveException):
-    def __init__(self, detail: str = "You do not have permission to perform this action."):
+    def __init__(
+        self, detail: str = "You do not have permission to perform this action."
+    ):
         super().__init__(status_code=403, detail=detail)
 
 
@@ -48,3 +50,9 @@ class DoubleBookingError(AceReserveException):
 class ReservationNotFoundError(AceReserveException):
     def __init__(self, detail: str = "There is no reservation with this ID."):
         super().__init__(status_code=404, detail=detail)
+
+
+class NotLoggedInError(AceReserveException):
+    def __init__(self, detail: str = "Only logged-in users can perform this action."):
+        super().__init__(status_code=403, detail=detail)
+

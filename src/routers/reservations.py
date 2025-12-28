@@ -2,11 +2,15 @@ from fastapi import APIRouter, Depends
 from sqlmodel import Session, select
 
 from ..models.reservation import ReservationRead, ReservationCreate
-from ..models.user import User
+from ..models.user import User, Role
 from ..auth.security import get_current_user
 from ..database import get_session
-from ..services.reservation_service import process_reservation_creation, get_user_reservations, delete_reservation
-
+from ..core.exceptions import NotLoggedInError
+from ..services.reservation_service import (
+    process_reservation_creation,
+    get_user_reservations,
+    delete_reservation,
+)
 
 router = APIRouter(prefix="/reservations", tags=["Reservations"])
 
@@ -17,6 +21,9 @@ def create_reservation(
     current_user: User = Depends(get_current_user),
     session: Session = Depends(get_session),
 ):
+    if current_user.role == Role.GUEST:
+        raise NotLoggedInError()
+
     new_reservation = process_reservation_creation(
         session, current_user, reservation_input
     )
@@ -30,6 +37,11 @@ def show_my_reservations(
 ):
     return get_user_reservations(session, current_user)
 
+
 @router.patch("/{reservation_id}/cancel")
-def cancel_reservation(reservation_id: int, session: Session = Depends(get_session), current_user: User = Depends(get_current_user)):
+def cancel_reservation(
+    reservation_id: int,
+    session: Session = Depends(get_session),
+    current_user: User = Depends(get_current_user),
+):
     return delete_reservation(session, current_user, reservation_id)

@@ -58,9 +58,8 @@ def process_reservation_creation(
 
     session.add(reservation)
 
-    points_earned = calculate_earned_points(data.duration_minutes)
-
     if user.loyalty:
+        points_earned = calculate_earned_points(data.duration_minutes)
         update_loyalty_level(user, user.loyalty, points_earned)
         session.add(user.loyalty)
 

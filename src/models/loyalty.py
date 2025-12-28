@@ -34,11 +34,14 @@ class LoyaltyAccount(LoyaltyAccountBase, table=True):
     user: "User" = Relationship(back_populates="loyalty")
     logs: list["LoyaltyLog"] = Relationship(back_populates="account")
 
+    @property
+    def user_name(self) -> str | None:
+        if self.user:
+            return self.user.full_name
+        return None
 
 class LoyaltyAccountRead(LoyaltyAccountBase):
-    id: int
-    user_id: int
-    updated_at: datetime
+    pass
 
 
 class LoyaltyLogBase(SQLModel):
@@ -63,3 +66,9 @@ class LoyaltyLogCreate(LoyaltyLogBase):
 class LoyaltyLogRead(LoyaltyLogBase):
     id: int
     created_at: datetime
+
+
+class LoyaltyAdjust(SQLModel):
+    user_id: int
+    points_change: int
+    reason: str | None = None

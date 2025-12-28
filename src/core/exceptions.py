@@ -56,3 +56,7 @@ class NotLoggedInError(AceReserveException):
     def __init__(self, detail: str = "Only logged-in users can perform this action."):
         super().__init__(status_code=403, detail=detail)
 
+
+class LoyaltyAccountNotFoundError(AceReserveException):
+    def __init__(self, detail: str = "No loyalty account related to this user."):
+        super().__init__(status_code=404, detail=detail)

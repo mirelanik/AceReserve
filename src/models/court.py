@@ -36,4 +36,4 @@ class CourtCreate(CourtBase):
     pass
 
 class CourtRead(CourtBase):
-    id: int
+    pass

@@ -33,6 +33,12 @@ class User(UserBase, table=True):
     reservations: list["Reservation"] = Relationship(back_populates="user")
     reviews: list["Review"] = Relationship(back_populates="user")
 
+    @property
+    def loyalty_points(self) -> int:
+        if self.loyalty:
+            return self.loyalty.points
+        return 0
+
 
 class UserCreate(UserBase):
     email: str

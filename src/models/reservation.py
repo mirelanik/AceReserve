@@ -18,9 +18,9 @@ class ReservationStatus(str, Enum):
 
 
 class ReservationBase(SQLModel):
+    court_number: int = Field(foreign_key="courts.number")
     start_time: datetime
     duration_minutes: int = Field(default=60, ge=30)
-    court_id: int = Field(foreign_key="courts.id")
     service_id: int | None = None
     rent_racket: bool = Field(default=False)
     rent_balls: bool = Field(default=False)
@@ -39,7 +39,10 @@ class Reservation(ReservationBase, table=True):
     user: "User" = Relationship(back_populates="reservations")
     court: "Court" = Relationship(back_populates="reservations")
 
-
+    @property
+    def user_name(self) -> str:
+        return self.user.full_name
+    
 class ReservationCreate(ReservationBase):
     @field_validator("duration_minutes")
     @classmethod
@@ -55,4 +58,5 @@ class ReservationRead(ReservationBase):
     id: int
     status: ReservationStatus
     created_at: datetime
-    user_id: int
+    user_name: str
+    end_time: datetime

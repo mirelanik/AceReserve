@@ -31,5 +31,20 @@ class ExistingCourtError(AceReserveException):
 
 
 class ForbiddenActionError(AceReserveException):
-    def __init__(self, detail: str = "You do not have permission to add court."):
+    def __init__(self, detail: str = "You do not have permission to perform this action."):
         super().__init__(status_code=403, detail=detail)
+
+
+class StartTimeError(AceReserveException):
+    def __init__(self, detail: str = "Invalid start time."):
+        super().__init__(status_code=400, detail=detail)
+
+
+class DoubleBookingError(AceReserveException):
+    def __init__(self, detail: str = "Court is already booked."):
+        super().__init__(status_code=409, detail=detail)
+
+
+class ReservationNotFoundError(AceReserveException):
+    def __init__(self, detail: str = "There is no reservation with this ID."):
+        super().__init__(status_code=404, detail=detail)

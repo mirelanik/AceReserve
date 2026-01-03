@@ -26,6 +26,7 @@ class ReservationBase(SQLModel):
     service_id: int | None = None
     rent_racket: bool = Field(default=False)
     rent_balls: bool = Field(default=False)
+    wants_lighting: bool = Field(default=False)
     notes: str | None = None
 
 

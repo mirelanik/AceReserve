@@ -86,3 +86,12 @@ class NotLoggedInError(AceReserveException):
 class LoyaltyAccountNotFoundError(AceReserveException):
     def __init__(self, detail: str = "No loyalty account related to this user."):
         super().__init__(status_code=404, detail=detail)
+
+
+class LightingAvailabilityError(AceReserveException):
+    def __init__(self, detail: str = "Lighting is not available for this court."):
+        super().__init__(status_code=400, detail=detail)
+        
+class LightingTimeError(AceReserveException):
+    def __init__(self, detail: str = "Lighting is only available after 18:00."):
+        super().__init__(status_code=400, detail=detail)

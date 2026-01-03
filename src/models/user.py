@@ -8,6 +8,19 @@ if TYPE_CHECKING:
     from .reservation import Reservation
     from .service import Service
     from .review import Review
+    from .court import Court 
+
+
+class UserCourtFavorite(SQLModel, table=True):
+    __tablename__ = "user_court_favorites" # type: ignore
+    user_id: int = Field(foreign_key="users.id", primary_key=True)
+    court_id: int = Field(foreign_key="courts.id", primary_key=True)
+
+
+class UserCoachFavorite(SQLModel, table=True):
+    __tablename__ = "user_coach_favorites" # type: ignore
+    user_id: int = Field(foreign_key="users.id", primary_key=True)
+    coach_id: int = Field(foreign_key="users.id", primary_key=True)
 
 
 class Role(str, Enum):
@@ -36,6 +49,18 @@ class User(UserBase, table=True):
     reviews: list["Review"] = Relationship(back_populates="user")
     services: list["Service"] = Relationship(back_populates="coach")
 
+    favorite_courts: list["Court"] = Relationship(
+        back_populates="favorited_by",
+        link_model=UserCourtFavorite
+    )
+
+    favorite_coaches: list["User"] = Relationship(
+        link_model=UserCoachFavorite,
+        sa_relationship_kwargs={
+            "primaryjoin": "User.id==user_coach_favorites.c.user_id",
+            "secondaryjoin": "User.id==user_coach_favorites.c.coach_id",
+        },
+    )
     @property
     def loyalty_points(self) -> int:
         if self.loyalty:

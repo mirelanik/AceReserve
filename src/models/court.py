@@ -2,6 +2,7 @@ from enum import Enum
 from decimal import Decimal
 from sqlmodel import SQLModel, Field, Relationship
 from typing import TYPE_CHECKING
+from .user import UserCourtFavorite, User
 
 if TYPE_CHECKING:
     from .reservation import Reservation
@@ -32,8 +33,15 @@ class Court(CourtBase, table=True):
     reservations: list["Reservation"] = Relationship(back_populates="court")
     reviews: list["Review"] = Relationship(back_populates="court")
 
+    favorited_by: list["User"] = Relationship(
+        back_populates="favorite_courts",
+        link_model=UserCourtFavorite,
+    )
+
+
 class CourtCreate(CourtBase):
     pass
+
 
 class CourtRead(CourtBase):
     pass

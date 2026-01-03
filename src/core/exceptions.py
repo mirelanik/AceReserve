@@ -93,3 +93,13 @@ class LightingTimeError(AceReserveException):
 class PermissionError(AceReserveException):
     def __init__(self, detail: str = "User does not have the required role."):
         super().__init__(status_code=403, detail=detail)
+
+
+class FavoriteAlreadyExistsError(AceReserveException):
+    def __init__(self, detail: str = "Already in your favorites."):
+        super().__init__(status_code=400, detail=detail)
+
+
+class CoachNotFoundError(AceReserveException):
+    def __init__(self, detail: str = "Coach not found."):
+        super().__init__(status_code=404, detail=detail)

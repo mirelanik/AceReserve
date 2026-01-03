@@ -5,9 +5,11 @@ from sqlmodel import SQLModel, Field, Relationship
 from typing import TYPE_CHECKING
 from pydantic import field_validator
 
+
 if TYPE_CHECKING:
     from .user import User
     from .court import Court
+    from .service import Service
 
 
 class ReservationStatus(str, Enum):

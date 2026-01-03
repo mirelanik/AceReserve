@@ -1,11 +1,13 @@
 from enum import Enum
 from sqlmodel import SQLModel, Field, Relationship
 from typing import TYPE_CHECKING, Optional
-from ..models.loyalty import LoyaltyLevel, LoyaltyAccount
+
 
 if TYPE_CHECKING:
-    from ..models.reservation import Reservation
-    from ..models.review import Review
+    from .loyalty import LoyaltyAccount, LoyaltyLevel
+    from .reservation import Reservation
+    from .service import Service
+    from .review import Review
 
 
 class Role(str, Enum):
@@ -32,6 +34,7 @@ class User(UserBase, table=True):
     )
     reservations: list["Reservation"] = Relationship(back_populates="user")
     reviews: list["Review"] = Relationship(back_populates="user")
+    services: list["Service"] = Relationship(back_populates="coach")
 
     @property
     def loyalty_points(self) -> int:
@@ -40,7 +43,7 @@ class User(UserBase, table=True):
         return 0
 
     @property
-    def loyalty_level(self) -> LoyaltyLevel | None:
+    def loyalty_level(self) -> Optional["LoyaltyLevel"]:
         if self.loyalty:
             return self.loyalty.level
         return None

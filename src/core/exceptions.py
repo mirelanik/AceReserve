@@ -37,18 +37,44 @@ class ForbiddenActionError(AceReserveException):
         super().__init__(status_code=403, detail=detail)
 
 
+class CoachAccessError(AceReserveException):
+    def __init__(self, detail: str = "Access restricted to coaches only."):
+        super().__init__(status_code=403, detail=detail)
+
+
+class AdminAccessError(AceReserveException):
+    def __init__(self, detail: str = "Access restricted to admins only."):
+        super().__init__(status_code=403, detail=detail)
+
+
 class StartTimeError(AceReserveException):
     def __init__(self, detail: str = "Invalid start time."):
         super().__init__(status_code=400, detail=detail)
 
 
-class DoubleBookingError(AceReserveException):
-    def __init__(self, detail: str = "Court is already booked."):
+class DoubleCourtBookingError(AceReserveException):
+
+    def __init__(self, detail: str = "Court is already booked for this time slot."):
+        super().__init__(status_code=409, detail=detail)
+
+
+class DoubleCoachBookingError(AceReserveException):
+    def __init__(self, detail: str = "Coach is already booked for this time slot."):
         super().__init__(status_code=409, detail=detail)
 
 
 class ReservationNotFoundError(AceReserveException):
     def __init__(self, detail: str = "There is no reservation with this ID."):
+        super().__init__(status_code=404, detail=detail)
+
+
+class ServiceNotFoundError(AceReserveException):
+    def __init__(self, detail: str = "There is no service with this ID."):
+        super().__init__(status_code=404, detail=detail)
+
+
+class ServiceNotChosenError(AceReserveException):
+    def __init__(self, detail: str = "There is no service chosen for this reservation."):
         super().__init__(status_code=404, detail=detail)
 
 

@@ -62,3 +62,8 @@ def process_reservation_confirmation(
     session.refresh(reservation)
 
     return reservation
+
+
+def get_all_available_services(session: Session) -> Sequence[Service]:
+    statement = select(Service).where(Service.is_available == True)
+    return session.exec(statement).all()

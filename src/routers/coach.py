@@ -11,9 +11,10 @@ from ..services.coach_service import (
     get_services_by_coach,
     get_reservations_for_coach,
     process_reservation_confirmation,
+    get_all_available_services
 )
 
-router = APIRouter(prefix="/coach", tags=["Coach"])
+router = APIRouter(prefix="/coach", tags=["Coaches"])
 
 
 @router.post("/services", response_model=ServiceRead)
@@ -23,14 +24,6 @@ def create_service(
     session: Session = Depends(get_session),
 ):
     return create_new_service(session, current_coach, service_input)
-
-
-@router.get("/services", response_model=list[ServiceRead])
-def get_services(
-    session: Session = Depends(get_session),
-    current_coach: User = Depends(get_current_coach),
-):
-    return get_services_by_coach(session, current_coach)
 
 
 @router.get("/coach_reservations", response_model=list[ReservationRead])
@@ -48,3 +41,8 @@ def confirm_reservation(
     current_coach: User = Depends(get_current_coach),
 ):
     return process_reservation_confirmation(session, current_coach, reservation_id)
+
+
+@router.get("/services", response_model=list[ServiceRead])
+def get_available_services(session: Session = Depends(get_session)):
+    return get_all_available_services(session)

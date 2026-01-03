@@ -6,7 +6,8 @@ from ..models.user import User, UserCreate, UserRead
 from ..services.user_service import create_user, authenticate_user
 from ..database import get_session
 from ..core.exceptions import UnauthorizedUserError
-from ..auth.security import create_access_token, get_current_user
+from ..auth.security import create_access_token
+from ..auth.dependencies import require_user 
 
 router = APIRouter(prefix="/users", tags=["Users"])
 
@@ -26,5 +27,5 @@ def login(form_data: Annotated[OAuth2PasswordRequestForm, Depends()], session:Se
     return {"access_token": access_token, "token_type": "bearer"}
 
 @router.get("/me", response_model=UserRead)
-def show_current_user(current_user: UserRead = Depends(get_current_user)):
+def show_current_user(current_user: UserRead = Depends(require_user)):
     return current_user

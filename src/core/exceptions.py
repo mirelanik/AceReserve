@@ -37,16 +37,6 @@ class ForbiddenActionError(AceReserveException):
         super().__init__(status_code=403, detail=detail)
 
 
-class CoachAccessError(AceReserveException):
-    def __init__(self, detail: str = "Access restricted to coaches only."):
-        super().__init__(status_code=403, detail=detail)
-
-
-class AdminAccessError(AceReserveException):
-    def __init__(self, detail: str = "Access restricted to admins only."):
-        super().__init__(status_code=403, detail=detail)
-
-
 class StartTimeError(AceReserveException):
     def __init__(self, detail: str = "Invalid start time."):
         super().__init__(status_code=400, detail=detail)
@@ -74,7 +64,9 @@ class ServiceNotFoundError(AceReserveException):
 
 
 class ServiceNotChosenError(AceReserveException):
-    def __init__(self, detail: str = "There is no service chosen for this reservation."):
+    def __init__(
+        self, detail: str = "There is no service chosen for this reservation."
+    ):
         super().__init__(status_code=404, detail=detail)
 
 
@@ -91,7 +83,13 @@ class LoyaltyAccountNotFoundError(AceReserveException):
 class LightingAvailabilityError(AceReserveException):
     def __init__(self, detail: str = "Lighting is not available for this court."):
         super().__init__(status_code=400, detail=detail)
-        
+
+
 class LightingTimeError(AceReserveException):
     def __init__(self, detail: str = "Lighting is only available after 18:00."):
         super().__init__(status_code=400, detail=detail)
+
+
+class PermissionError(AceReserveException):
+    def __init__(self, detail: str = "User does not have the required role."):
+        super().__init__(status_code=403, detail=detail)

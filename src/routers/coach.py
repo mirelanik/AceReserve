@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends
 from sqlmodel import Session
 
 from ..database import get_session
-from ..auth.dependancies import get_current_coach
+from ..auth.dependencies import require_coach
 from ..models.user import User
 from ..models.service import ServiceRead, ServiceCreate
 from ..models.reservation import ReservationRead
@@ -20,7 +20,7 @@ router = APIRouter(prefix="/coach", tags=["Coaches"])
 @router.post("/services", response_model=ServiceRead)
 def create_service(
     service_input: ServiceCreate,
-    current_coach: User = Depends(get_current_coach),
+    current_coach: User = Depends(require_coach),
     session: Session = Depends(get_session),
 ):
     return create_new_service(session, current_coach, service_input)
@@ -29,7 +29,7 @@ def create_service(
 @router.get("/coach_reservations", response_model=list[ReservationRead])
 def get_coach_reservations(
     session: Session = Depends(get_session),
-    current_coach: User = Depends(get_current_coach),
+    current_coach: User = Depends(require_coach),
 ):
     return get_reservations_for_coach(session, current_coach)
 
@@ -38,7 +38,7 @@ def get_coach_reservations(
 def confirm_reservation(
     reservation_id: int,
     session: Session = Depends(get_session),
-    current_coach: User = Depends(get_current_coach),
+    current_coach: User = Depends(require_coach),
 ):
     return process_reservation_confirmation(session, current_coach, reservation_id)
 

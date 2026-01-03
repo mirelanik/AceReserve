@@ -1,7 +1,6 @@
 from fastapi import APIRouter, Depends
-from sqlmodel import select, Session
-from ..models.loyalty import LoyaltyAccountRead, LoyaltyAdjust, LoyaltyAccount
-from ..auth.security import get_current_user
+from ..models.loyalty import LoyaltyAccountRead, LoyaltyAdjust
+from ..auth.dependencies import require_user
 from ..models.user import User
 from ..services.loyalty_service import get_loyalty_info, change_loyalty_points
 from ..database import get_session
@@ -12,14 +11,14 @@ router = APIRouter(prefix="/loyalty", tags=["Loyalty"])
 
 
 @router.get("/", response_model=LoyaltyAccountRead)
-def show_loyalty_info(current_user: User = Depends(get_current_user)):
+def show_loyalty_info(current_user: User = Depends(require_user)):
     return get_loyalty_info(current_user)
 
 
 @router.post("/adjust", response_model=LoyaltyAccountRead)
 def adjust_loyalty_points(
     adjustment: LoyaltyAdjust,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_user),
     session=Depends(get_session),
 ):
     if current_user.role != Role.ADMIN:

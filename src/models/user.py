@@ -8,17 +8,17 @@ if TYPE_CHECKING:
     from .reservation import Reservation
     from .service import Service
     from .review import Review
-    from .court import Court 
+    from .court import Court
 
 
 class UserCourtFavorite(SQLModel, table=True):
-    __tablename__ = "user_court_favorites" # type: ignore
+    __tablename__ = "user_court_favorites"  # type: ignore
     user_id: int = Field(foreign_key="users.id", primary_key=True)
     court_id: int = Field(foreign_key="courts.id", primary_key=True)
 
 
 class UserCoachFavorite(SQLModel, table=True):
-    __tablename__ = "user_coach_favorites" # type: ignore
+    __tablename__ = "user_coach_favorites"  # type: ignore
     user_id: int = Field(foreign_key="users.id", primary_key=True)
     coach_id: int = Field(foreign_key="users.id", primary_key=True)
 
@@ -46,12 +46,14 @@ class User(UserBase, table=True):
         back_populates="user", sa_relationship_kwargs={"uselist": False}
     )
     reservations: list["Reservation"] = Relationship(back_populates="user")
-    reviews: list["Review"] = Relationship(back_populates="user")
+    reviews_written: list["Review"] = Relationship(
+        back_populates="user",
+        sa_relationship_kwargs={"foreign_keys": "Review.author_id"},
+    )
     services: list["Service"] = Relationship(back_populates="coach")
 
     favorite_courts: list["Court"] = Relationship(
-        back_populates="favorited_by",
-        link_model=UserCourtFavorite
+        back_populates="favorited_by", link_model=UserCourtFavorite
     )
 
     favorite_coaches: list["User"] = Relationship(
@@ -61,6 +63,7 @@ class User(UserBase, table=True):
             "secondaryjoin": "User.id==user_coach_favorites.c.coach_id",
         },
     )
+
     @property
     def loyalty_points(self) -> int:
         if self.loyalty:

@@ -103,3 +103,13 @@ class FavoriteAlreadyExistsError(AceReserveException):
 class CoachNotFoundError(AceReserveException):
     def __init__(self, detail: str = "Coach not found."):
         super().__init__(status_code=404, detail=detail)
+
+
+class NoTargetTypeError(AceReserveException):
+    def __init__(self, detail: str = "Review must target at least one entity."):
+        super().__init__(status_code=400, detail=detail)
+
+
+class MoreTargetTypesError(AceReserveException):
+    def __init__(self, detail: str = "Review must target only one entity."):
+        super().__init__(status_code=400, detail=detail)

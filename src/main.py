@@ -1,7 +1,7 @@
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from .database import create_db_and_tables
-from .routers import users, courts, reservations, loyalty, coach, favorites
+from .routers import users, courts, reservations, loyalty, coach, favorites, reviews
 from .models.review import Review
 
 
@@ -25,3 +25,4 @@ app.include_router(reservations.router)
 app.include_router(loyalty.router)
 app.include_router(coach.router)
 app.include_router(favorites.router)
+app.include_router(reviews.router)

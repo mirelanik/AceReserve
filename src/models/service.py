@@ -5,7 +5,7 @@ from sqlmodel import SQLModel, Field, Relationship
 
 if TYPE_CHECKING:
     from .user import User
-
+    from .review import Review
 
 class ServiceCategory(str, Enum):
     INDIVIDUAL = "individual"
@@ -27,7 +27,8 @@ class Service(ServiceBase, table=True):
 
     coach_id: int | None = Field(default=None, foreign_key="users.id")
     coach: "User" = Relationship(back_populates="services")
-
+    reviews: list["Review"] = Relationship(back_populates="service")
+    
     @property
     def coach_name(self) -> str:
         return self.coach.full_name

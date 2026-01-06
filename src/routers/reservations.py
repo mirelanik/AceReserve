@@ -1,11 +1,9 @@
 from fastapi import APIRouter, Depends
 from sqlmodel import Session
-
 from ..models.reservation import ReservationRead, ReservationCreate, ReservationUpdate
-from ..models.user import User, Role
+from ..models.user import User
 from ..auth.dependencies import require_user, get_current_user
 from ..core.database import get_session
-from ..core.exceptions import NotLoggedInError
 from ..services.reservation_service import (
     process_reservation_creation,
     get_user_reservations,
@@ -16,15 +14,12 @@ from ..services.reservation_service import (
 router = APIRouter(prefix="/reservations", tags=["Reservations"])
 
 
-@router.post("/create", response_model=ReservationRead)
+@router.post("/", response_model=ReservationRead)
 def create_reservation(
     reservation_input: ReservationCreate,
-    current_user: User = Depends(require_user),
     session: Session = Depends(get_session),
+    current_user: User = Depends(require_user),
 ):
-    if current_user.role == Role.GUEST:
-        raise NotLoggedInError()
-
     new_reservation = process_reservation_creation(
         session, current_user, reservation_input
     )
@@ -32,14 +27,14 @@ def create_reservation(
     return new_reservation
 
 
-@router.get("/show", response_model=list[ReservationRead])
+@router.get("/me", response_model=list[ReservationRead])
 def show_my_reservations(
-    session: Session = Depends(get_session), current_user=Depends(require_user)
+    session: Session = Depends(get_session), current_user: User = Depends(require_user)
 ):
     return get_user_reservations(session, current_user)
 
 
-@router.patch("/{reservation_id}/cancel")
+@router.patch("/{reservation_id}")
 def cancel_reservation(
     reservation_id: int,
     session: Session = Depends(get_session),
@@ -48,7 +43,7 @@ def cancel_reservation(
     return delete_reservation(session, current_user, reservation_id)
 
 
-@router.post("/edit", response_model=ReservationRead)
+@router.post("/{reservation_id}", response_model=ReservationRead)
 def edit_reservation(
     reservation_id: int,
     update_data: ReservationUpdate,

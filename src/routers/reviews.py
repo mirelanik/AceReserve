@@ -15,7 +15,7 @@ from ..services.review_service import (
 router = APIRouter(prefix="/reviews", tags=["Reviews"])
 
 
-@router.post("/add", response_model=ReviewRead)
+@router.post("/", response_model=ReviewRead)
 def create_review(
     review_input: ReviewCreate,
     session: Session = Depends(get_session),

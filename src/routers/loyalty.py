@@ -18,8 +18,8 @@ def show_loyalty_info(current_user: User = Depends(require_user)):
 @router.post("/adjust", response_model=LoyaltyAccountRead)
 def adjust_loyalty_points(
     adjustment: LoyaltyAdjust,
-    current_user: User = Depends(require_user),
     session=Depends(get_session),
+    current_user: User = Depends(require_user),
 ):
     if current_user.role != Role.ADMIN:
         raise ForbiddenActionError()

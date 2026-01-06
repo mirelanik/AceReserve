@@ -1,5 +1,5 @@
-from sqlmodel import Session
-from ..models.user import User, UserCoachFavorite
+from sqlmodel import Session, select
+from ..models.user import User, UserCoachFavorite, Role
 from ..models.court import Court
 from ..core.exceptions import (
     CourtNotFoundError,
@@ -9,7 +9,7 @@ from ..core.exceptions import (
 
 
 def add_court_to_favorites(session: Session, user: User, court_number: int):
-    court = session.get(Court, court_number)
+    court = session.exec(select(Court).where(Court.number == court_number)).first()
     if not court:
         raise CourtNotFoundError()
 
@@ -24,7 +24,7 @@ def add_court_to_favorites(session: Session, user: User, court_number: int):
 
 
 def remove_court_from_favorites(session: Session, user: User, court_number: int):
-    court = session.get(Court, court_number)
+    court = session.exec(select(Court).where(Court.number == court_number)).first()
     if court and court in user.favorite_courts:
         user.favorite_courts.remove(court)
         session.add(user)
@@ -39,7 +39,7 @@ def list_favorite_courts(session: Session, user: User):
 
 def add_coach_to_favorites(session: Session, user: User, coach_id: int):
     coach = session.get(User, coach_id)
-    if not coach or coach.role != "coach":
+    if not coach or coach.role != Role.COACH:
         raise CoachNotFoundError()
 
     if coach in user.favorite_coaches:

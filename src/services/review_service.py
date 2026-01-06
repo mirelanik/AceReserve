@@ -24,7 +24,8 @@ def add_review(session: Session, author: User, review_input: ReviewCreate) -> Re
         raise NoTargetTypeError()
 
     if review_input.court_number:
-        if not session.get(Court, review_input.court_number):
+        court = session.exec(select(Court).where(Court.number == review_input.court_number)).first()
+        if not court:
             raise CourtNotFoundError()
 
     if review_input.service_id:
@@ -34,8 +35,6 @@ def add_review(session: Session, author: User, review_input: ReviewCreate) -> Re
     if review_input.coach_id:
         if not session.get(User, review_input.coach_id):
             raise CoachNotFoundError()
-
-    review = Review(**review_input.model_dump(exclude_unset=True), author_id=author.id)
 
     review = Review(
         author_id=author.id,

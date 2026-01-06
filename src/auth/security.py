@@ -6,7 +6,7 @@ from jwt.exceptions import InvalidTokenError, ExpiredSignatureError
 from sqlmodel import Session
 from ..core.config import settings
 from ..core.exceptions import CredentialsError
-from ..database import get_session
+from ..core.database import get_session
 from ..models.user import User
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/users/login")

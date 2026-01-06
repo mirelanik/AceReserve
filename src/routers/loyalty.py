@@ -3,7 +3,7 @@ from ..models.loyalty import LoyaltyAccountRead, LoyaltyAdjust
 from ..auth.dependencies import require_user
 from ..models.user import User
 from ..services.loyalty_service import get_loyalty_info, change_loyalty_points
-from ..database import get_session
+from ..core.database import get_session
 from ..models.user import Role
 from ..core.exceptions import ForbiddenActionError
 

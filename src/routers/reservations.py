@@ -4,7 +4,7 @@ from sqlmodel import Session
 from ..models.reservation import ReservationRead, ReservationCreate
 from ..models.user import User, Role
 from ..auth.dependencies import require_user
-from ..database import get_session
+from ..core.database import get_session
 from ..core.exceptions import NotLoggedInError
 from ..services.reservation_service import (
     process_reservation_creation,

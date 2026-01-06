@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends
 from sqlmodel import Session
-from ..database import get_session
+from ..core.database import get_session
 from ..models.court import CourtCreate, CourtRead
 from ..models.user import User, Role
 from ..auth.dependencies import require_user

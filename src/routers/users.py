@@ -4,7 +4,7 @@ from sqlmodel import Session
 from typing import Annotated
 from ..models.user import User, UserCreate, UserRead
 from ..services.user_service import create_user, authenticate_user
-from ..database import get_session
+from ..core.database import get_session
 from ..core.exceptions import UnauthorizedUserError
 from ..auth.security import create_access_token
 from ..auth.dependencies import require_user 

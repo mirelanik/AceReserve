@@ -64,3 +64,14 @@ class ReservationRead(ReservationBase):
     user_name: str
     end_time: datetime
     total_price: Decimal
+
+
+class ReservationUpdate(SQLModel):
+    court_number: int | None = None
+    start_time: datetime | None = None
+    duration_minutes: int | None = None
+
+    rent_racket: bool | None = None
+    rent_balls: bool | None = None
+    wants_lighting: bool | None = None
+    notes: str | None = None

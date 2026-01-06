@@ -91,7 +91,7 @@ class LightingTimeError(AceReserveException):
 
 
 class PermissionError(AceReserveException):
-    def __init__(self, detail: str = "User does not have the required role."):
+    def __init__(self, detail: str = "Not authorized to perform this action."):
         super().__init__(status_code=403, detail=detail)
 
 

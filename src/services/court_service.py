@@ -1,4 +1,4 @@
-from sqlmodel import Session, select
+from sqlmodel import Session, select, col
 from typing import Sequence
 from ..models.court import CourtCreate, Court
 from ..core.exceptions import ExistingCourtError, CourtNotFoundError
@@ -21,13 +21,23 @@ def create_court(session: Session, court_input: CourtCreate) -> Court:
     return new_court
 
 
-def get_all_courts(session: Session) -> Sequence[Court]:
+def show_all_courts(session: Session) -> Sequence[Court]:
     return session.exec(select(Court)).all()
 
 
-def get_court_by_number(session: Session, court_number: int) -> Court:
+def show_court_by_number(session: Session, court_number: int) -> Court:
     court = session.exec(select(Court).where(Court.number == court_number)).first()
     if not court:
         raise CourtNotFoundError()
 
     return court
+
+
+def select_courts_by_category(
+    session: Session, surface: str | None = None, lighting: bool | None = None
+) -> Sequence[Court]:
+    if surface:
+        statement = select(Court).where(col(Court.surface).ilike(f"%{surface}"))
+    if lighting is not None:
+        statement = select(Court).where(Court.has_lighting == True)
+    return session.exec(statement).all()

@@ -1,6 +1,6 @@
-from sqlmodel import Session, select
+from sqlmodel import Session, select, col
 from typing import Sequence
-from ..models.service import Service, ServiceCreate
+from ..models.service import Service, ServiceCreate, ServiceCategory
 from ..models.user import User
 from ..models.reservation import Reservation, ReservationStatus
 from ..core.exceptions import (
@@ -34,7 +34,9 @@ def get_reservations_for_coach(session: Session, user: User) -> Sequence[Reserva
     if not coach_services_ids:
         return []
 
-    statement = select(Reservation).where(Reservation.service_id.in_(coach_services_ids))
+    statement = select(Reservation).where(
+        Reservation.service_id.in_(coach_services_ids)
+    )
     reservations = session.exec(statement).all()
 
     return reservations
@@ -64,6 +66,15 @@ def process_reservation_confirmation(
     return reservation
 
 
-def get_all_available_services(session: Session) -> Sequence[Service]:
+def select_available_services(
+    session: Session, name: str | None = None, category: ServiceCategory | None = None
+) -> Sequence[Service]:
     statement = select(Service).where(Service.is_available == True)
+
+    if name: 
+        statement = statement.where(col(Service.name).ilike(f"%{name}%"))
+
+    if category:
+        statement = statement.where(Service.category == category)
+    
     return session.exec(statement).all()

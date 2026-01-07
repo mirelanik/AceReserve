@@ -1,16 +1,16 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Query
 from sqlmodel import Session
 
 from ..core.database import get_session
 from ..auth.dependencies import require_coach
 from ..models.user import User
-from ..models.service import ServiceRead, ServiceCreate
+from ..models.service import ServiceRead, ServiceCreate, ServiceCategory
 from ..models.reservation import ReservationRead
 from ..services.coach_service import (
     create_new_service,
     get_reservations_for_coach,
     process_reservation_confirmation,
-    get_all_available_services,
+    select_available_services,
 )
 
 router = APIRouter(prefix="/coach", tags=["Coaches"])
@@ -43,5 +43,9 @@ def confirm_reservation(
 
 
 @router.get("/services", response_model=list[ServiceRead])
-def get_available_services(session: Session = Depends(get_session)):
-    return get_all_available_services(session)
+def get_available_services(
+    name: str | None = Query(None, description="Search by coach name"),
+    category: ServiceCategory | None = Query(None, description="Search by category"),
+    session: Session = Depends(get_session),
+):
+    return select_available_services(session, name, category)

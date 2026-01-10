@@ -4,8 +4,12 @@ from datetime import datetime, timedelta
 from ..models.court import CourtCreate, Court
 from ..core.exceptions import ExistingCourtError, CourtNotFoundError
 from ..models.reservation import Reservation, ReservationStatus
+from ..models.user import User
 
-def create_court(session: Session, court_input: CourtCreate) -> Court:
+
+def create_court(
+    session: Session, court_input: CourtCreate, current_user: User
+) -> Court:
     existing_court = session.exec(
         select(Court).where(Court.number == court_input.number)
     ).first()
@@ -20,6 +24,16 @@ def create_court(session: Session, court_input: CourtCreate) -> Court:
     session.refresh(new_court)
 
     return new_court
+
+
+def remove_court(session: Session, court_number: int, current_user: User):
+    court = session.get(Court, court_number)
+    if not court:
+        raise CourtNotFoundError()
+
+    session.delete(court)
+    session.commit()
+    return {"msg": f"Court number {court_number} deleted successfully"}
 
 
 def show_all_courts(session: Session) -> Sequence[Court]:
@@ -45,7 +59,7 @@ def select_courts_by_category(
 
     if surface:
         statement = statement.where(col(Court.surface).ilike(f"%{surface}"))
-    
+
     if lighting is not None:
         statement = statement.where(Court.has_lighting == True)
 
@@ -53,12 +67,12 @@ def select_courts_by_category(
         end_datetime = start_datetime + timedelta(minutes=duration)
         busy_courts_statement = select(Reservation.court_number).where(
             Reservation.status != ReservationStatus.CANCELLED,
-            Reservation.start_time < end_datetime, 
-            Reservation.end_time > start_datetime
+            Reservation.start_time < end_datetime,
+            Reservation.end_time > start_datetime,
         )
         busy_court_ids = session.exec(busy_courts_statement).all()
 
         if busy_court_ids:
-            statement=statement.where(col(Court.number).not_in(busy_court_ids))
-    
+            statement = statement.where(col(Court.number).not_in(busy_court_ids))
+
     return session.exec(statement).all()

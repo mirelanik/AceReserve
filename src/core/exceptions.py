@@ -15,6 +15,11 @@ class ExistingUserError(AceReserveException):
         super().__init__(status_code=400, detail=detail)
 
 
+class UserNotFoundError(AceReserveException):
+    def __init__(self, detail: str = "User not found."):
+        super().__init__(status_code=404, detail=detail)
+
+
 class UnauthorizedUserError(AceReserveException):
     def __init__(self, detail: str = "Incorrect email or password."):
         super().__init__(status_code=401, detail=detail)

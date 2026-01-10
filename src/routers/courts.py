@@ -3,11 +3,11 @@ from sqlmodel import Session
 from datetime import datetime
 from ..core.database import get_session
 from ..models.court import CourtCreate, CourtRead
-from ..models.user import User, Role
-from ..auth.dependencies import require_user
-from ..core.exceptions import ForbiddenActionError
+from ..models.user import User
+from ..auth.dependencies import require_admin
 from ..services.court_service import (
     create_court,
+    remove_court,
     show_all_courts,
     show_court_by_number,
     select_courts_by_category,
@@ -21,11 +21,18 @@ router = APIRouter(prefix="/courts", tags=["Courts"])
 def add_court(
     court_input: CourtCreate,
     session: Session = Depends(get_session),
-    current_user: User = Depends(require_user),
+    current_user: User = Depends(require_admin),
 ):
-    if current_user.role != Role.ADMIN:
-        raise ForbiddenActionError()
-    return create_court(session, court_input)
+    return create_court(session, court_input, current_user)
+
+
+@router.delete("/{court_number}")
+def delete_court(
+    court_number: int,
+    current_user: User = Depends(require_admin),
+    session: Session = Depends(get_session),
+):
+    return remove_court(session, court_number, current_user)
 
 
 @router.get("/all", response_model=list[CourtRead])
@@ -47,4 +54,6 @@ def get_courts_by_category(
     ),
     session: Session = Depends(get_session),
 ):
-    return select_courts_by_category(session, surface, lighting, start_datetime=start_datetime)
+    return select_courts_by_category(
+        session, surface, lighting, start_datetime=start_datetime
+    )

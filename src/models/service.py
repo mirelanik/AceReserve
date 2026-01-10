@@ -7,6 +7,7 @@ if TYPE_CHECKING:
     from .user import User
     from .review import Review
 
+
 class ServiceCategory(str, Enum):
     INDIVIDUAL = "individual"
     GROUP = "group"
@@ -21,6 +22,7 @@ class ServiceBase(SQLModel):
     category: ServiceCategory = Field(default=ServiceCategory.INDIVIDUAL)
     requires_coach: bool = False
 
+
 class Service(ServiceBase, table=True):
     __tablename__ = "services"  # type: ignore
     id: int | None = Field(default=None, primary_key=True)
@@ -28,13 +30,14 @@ class Service(ServiceBase, table=True):
     coach_id: int | None = Field(default=None, foreign_key="users.id")
     coach: "User" = Relationship(back_populates="services")
     reviews: list["Review"] = Relationship(back_populates="service")
-    
+
     @property
     def coach_name(self) -> str:
         return self.coach.full_name
 
+
 class ServiceCreate(ServiceBase):
-    pass
+    coach_id: int | None = None
 
 
 class ServiceRead(ServiceBase):

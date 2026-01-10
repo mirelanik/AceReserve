@@ -1,8 +1,9 @@
 from sqlmodel import Session, select, col
 from typing import Sequence
+from datetime import datetime, timedelta
 from ..models.court import CourtCreate, Court
 from ..core.exceptions import ExistingCourtError, CourtNotFoundError
-
+from ..models.reservation import Reservation, ReservationStatus
 
 def create_court(session: Session, court_input: CourtCreate) -> Court:
     existing_court = session.exec(
@@ -34,10 +35,30 @@ def show_court_by_number(session: Session, court_number: int) -> Court:
 
 
 def select_courts_by_category(
-    session: Session, surface: str | None = None, lighting: bool | None = None
+    session: Session,
+    surface: str | None = None,
+    lighting: bool | None = None,
+    start_datetime: datetime | None = None,
+    duration: int = 60,
 ) -> Sequence[Court]:
+    statement = select(Court).where(Court.available == True)
+
     if surface:
-        statement = select(Court).where(col(Court.surface).ilike(f"%{surface}"))
+        statement = statement.where(col(Court.surface).ilike(f"%{surface}"))
+    
     if lighting is not None:
-        statement = select(Court).where(Court.has_lighting == True)
+        statement = statement.where(Court.has_lighting == True)
+
+    if start_datetime:
+        end_datetime = start_datetime + timedelta(minutes=duration)
+        busy_courts_statement = select(Reservation.court_number).where(
+            Reservation.status != ReservationStatus.CANCELLED,
+            Reservation.start_time < end_datetime, 
+            Reservation.end_time > start_datetime
+        )
+        busy_court_ids = session.exec(busy_courts_statement).all()
+
+        if busy_court_ids:
+            statement=statement.where(col(Court.number).not_in(busy_court_ids))
+    
     return session.exec(statement).all()

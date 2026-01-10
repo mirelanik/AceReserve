@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, Query
 from sqlmodel import Session
+from datetime import datetime
 from ..core.database import get_session
 from ..models.court import CourtCreate, CourtRead
 from ..models.user import User, Role
@@ -41,6 +42,9 @@ def get_current_court(court_number: int, session: Session = Depends(get_session)
 def get_courts_by_category(
     surface: str | None = Query(None, description="Search by surface"),
     lighting: bool | None = Query(None, description="Search by lighting"),
+    start_datetime: datetime | None = Query(
+        None, description="Search by date and time (YYYY-MM-DDTHH:MM:SS)"
+    ),
     session: Session = Depends(get_session),
 ):
-    return select_courts_by_category(session, surface, lighting)
+    return select_courts_by_category(session, surface, lighting, start_datetime=start_datetime)

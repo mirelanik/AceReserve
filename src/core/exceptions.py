@@ -1,4 +1,4 @@
-from fastapi import HTTPException, status
+from fastapi import HTTPException
 
 
 class AceReserveException(HTTPException):
@@ -93,11 +93,6 @@ class LightingAvailabilityError(AceReserveException):
 class LightingTimeError(AceReserveException):
     def __init__(self, detail: str = "Lighting is only available after 18:00."):
         super().__init__(status_code=400, detail=detail)
-
-
-class PermissionError(AceReserveException):
-    def __init__(self, detail: str = "Not authorized to perform this action."):
-        super().__init__(status_code=403, detail=detail)
 
 
 class FavoriteAlreadyExistsError(AceReserveException):

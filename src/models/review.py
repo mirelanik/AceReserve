@@ -1,8 +1,8 @@
 from enum import Enum
 from datetime import datetime
+from typing import TYPE_CHECKING, Optional
 from pydantic import model_validator
 from sqlmodel import SQLModel, Field, Relationship
-from typing import TYPE_CHECKING, Optional
 
 if TYPE_CHECKING:
     from .user import User

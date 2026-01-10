@@ -2,7 +2,6 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from .core.database import create_db_and_tables
 from .routers import users, courts, reservations, loyalty, coach, favorites, reviews
-from .models.review import Review
 
 
 @asynccontextmanager

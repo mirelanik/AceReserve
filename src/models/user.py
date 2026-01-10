@@ -1,6 +1,6 @@
 from enum import Enum
-from sqlmodel import SQLModel, Field, Relationship
 from typing import TYPE_CHECKING, Optional
+from sqlmodel import SQLModel, Field, Relationship
 
 
 if TYPE_CHECKING:

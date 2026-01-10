@@ -1,7 +1,7 @@
 from enum import Enum
 from decimal import Decimal
-from sqlmodel import SQLModel, Field, Relationship
 from typing import TYPE_CHECKING
+from sqlmodel import SQLModel, Field, Relationship
 from .user import UserCourtFavorite, User
 
 if TYPE_CHECKING:

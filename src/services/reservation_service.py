@@ -1,7 +1,6 @@
+from typing import Sequence
 from datetime import datetime, timedelta, timezone
 from sqlmodel import Session, select
-from typing import Sequence
-from decimal import Decimal
 from ..core.exceptions import (
     StartTimeError,
     DoubleCourtBookingError,
@@ -12,7 +11,6 @@ from ..core.exceptions import (
     ForbiddenActionError,
     LightingAvailabilityError,
     LightingTimeError,
-    PermissionError,
 )
 from ..models.reservation import (
     Reservation,

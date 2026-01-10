@@ -4,7 +4,7 @@ from ..models.user import User
 from ..models.loyalty import LoyaltyLevel
 from ..models.reservation import (
     ReservationCreate,
-)  
+)
 
 DISCOUNTS: dict = {
     LoyaltyLevel.BEGINNER: Decimal("0.00"),

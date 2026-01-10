@@ -1,5 +1,5 @@
-from sqlmodel import Session, select, col
 from typing import Sequence
+from sqlmodel import Session, select, col
 from ..models.service import Service, ServiceCreate, ServiceCategory
 from ..models.user import User, Role
 from ..models.reservation import Reservation, ReservationStatus
@@ -46,7 +46,7 @@ def create_new_service(
     return service
 
 
-def get_services_by_coach(session: Session, user: User) -> list[Service]:
+def get_services_by_coach(user: User) -> list[Service]:
     return user.services
 
 
@@ -57,7 +57,7 @@ def get_reservations_for_coach(session: Session, user: User) -> Sequence[Reserva
         return []
 
     statement = select(Reservation).where(
-        Reservation.service_id.in_(coach_services_ids)
+        col(Reservation.service_id).in_(coach_services_ids)
     )
     reservations = session.exec(statement).all()
 
@@ -91,7 +91,7 @@ def process_reservation_confirmation(
 def select_available_services(
     session: Session, name: str | None = None, category: ServiceCategory | None = None
 ) -> Sequence[Service]:
-    statement = select(Service).where(Service.is_available == True)
+    statement = select(Service).where(Service.is_available is True)
 
     if name:
         statement = statement.where(col(Service.name).ilike(f"%{name}%"))

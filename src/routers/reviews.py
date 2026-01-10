@@ -3,7 +3,7 @@ from sqlmodel import Session
 from ..core.database import get_session
 from ..auth.dependencies import require_user
 from ..models.user import User
-from ..models.review import Review, ReviewCreate, ReviewRead
+from ..models.review import ReviewCreate, ReviewRead
 from ..services.review_service import (
     add_review,
     show_court_reviews,

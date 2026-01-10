@@ -1,6 +1,6 @@
+from datetime import datetime, timedelta
 from fastapi import Depends
 from fastapi.security import OAuth2PasswordBearer
-from datetime import datetime, timedelta
 import jwt
 from jwt.exceptions import InvalidTokenError, ExpiredSignatureError
 from sqlmodel import Session
@@ -36,9 +36,9 @@ def get_current_user(
         raise CredentialsError(detail="Token has expired.")
     except InvalidTokenError:
         raise CredentialsError(detail="Invalid token.")
-    
+
     user = session.get(User, int(user_id))
     if user is None:
         raise CredentialsError()
-    
+
     return user

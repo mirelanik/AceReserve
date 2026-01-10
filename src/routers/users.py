@@ -1,7 +1,7 @@
+from typing import Annotated
 from fastapi import APIRouter, Depends
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlmodel import Session
-from typing import Annotated
 from ..models.user import User, UserCreate, UserRead, Role
 from ..services.user_service import (
     create_user,

@@ -7,8 +7,7 @@ from ..core.exceptions import LoyaltyAccountNotFoundError
 def update_loyalty_level(account: LoyaltyAccount, points_change: int) -> None:
     account.points += points_change
 
-    if account.points < 0:
-        account.points = 0
+    account.points = max(account.points, 0)
 
     if account.points >= 300:
         account.level = LoyaltyLevel.PLATINUM
@@ -35,7 +34,7 @@ def change_loyalty_points(
 
     if not loyalty_account:
         raise LoyaltyAccountNotFoundError()
-    
+
     update_loyalty_level(loyalty_account, adjustment)
 
     session.add(loyalty_account)

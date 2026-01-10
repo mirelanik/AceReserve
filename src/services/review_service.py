@@ -1,6 +1,5 @@
-from sqlmodel import Session, func
 from typing import Sequence
-from sqlmodel import select
+from sqlmodel import Session, func, select
 from ..models.review import Review, ReviewCreate
 from ..models.user import User
 from ..models.court import Court
@@ -24,7 +23,9 @@ def add_review(session: Session, author: User, review_input: ReviewCreate) -> Re
         raise NoTargetTypeError()
 
     if review_input.court_number:
-        court = session.exec(select(Court).where(Court.number == review_input.court_number)).first()
+        court = session.exec(
+            select(Court).where(Court.number == review_input.court_number)
+        ).first()
         if not court:
             raise CourtNotFoundError()
 

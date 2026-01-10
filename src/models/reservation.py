@@ -1,8 +1,8 @@
 from enum import Enum
 from decimal import Decimal
 from datetime import datetime
-from sqlmodel import SQLModel, Field, Relationship
 from typing import TYPE_CHECKING
+from sqlmodel import SQLModel, Field, Relationship
 from pydantic import field_validator
 
 

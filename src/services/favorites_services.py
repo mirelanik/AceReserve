@@ -1,5 +1,5 @@
 from sqlmodel import Session, select
-from ..models.user import User, UserCoachFavorite, Role
+from ..models.user import User, Role
 from ..models.court import Court
 from ..core.exceptions import (
     CourtNotFoundError,
@@ -33,7 +33,7 @@ def remove_court_from_favorites(session: Session, user: User, court_number: int)
     return {"message": f"Court {court_number} removed from favorites."}
 
 
-def list_favorite_courts(session: Session, user: User):
+def list_favorite_courts(user: User):
     return user.favorite_courts
 
 
@@ -62,5 +62,5 @@ def remove_coach_from_favorites(session: Session, user: User, coach_id: int):
     return {"message": f"Coach {coach_id} removed from favorites."}
 
 
-def list_favorite_coaches(session: Session, user: User):
+def list_favorite_coaches(user: User):
     return user.favorite_coaches

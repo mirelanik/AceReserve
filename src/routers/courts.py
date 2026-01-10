@@ -1,6 +1,6 @@
+from datetime import datetime
 from fastapi import APIRouter, Depends, Query
 from sqlmodel import Session
-from datetime import datetime
 from ..core.database import get_session
 from ..models.court import CourtCreate, CourtRead
 from ..models.user import User

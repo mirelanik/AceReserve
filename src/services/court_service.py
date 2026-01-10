@@ -1,6 +1,6 @@
-from sqlmodel import Session, select, col
 from typing import Sequence
 from datetime import datetime, timedelta
+from sqlmodel import Session, select, col
 from ..models.court import CourtCreate, Court
 from ..core.exceptions import ExistingCourtError, CourtNotFoundError
 from ..models.reservation import Reservation, ReservationStatus
@@ -55,13 +55,13 @@ def select_courts_by_category(
     start_datetime: datetime | None = None,
     duration: int = 60,
 ) -> Sequence[Court]:
-    statement = select(Court).where(Court.available == True)
+    statement = select(Court).where(Court.available is True)
 
     if surface:
         statement = statement.where(col(Court.surface).ilike(f"%{surface}"))
 
     if lighting is not None:
-        statement = statement.where(Court.has_lighting == True)
+        statement = statement.where(Court.has_lighting is True)
 
     if start_datetime:
         end_datetime = start_datetime + timedelta(minutes=duration)

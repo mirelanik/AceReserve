@@ -1,65 +1,105 @@
+"""Favorite management API endpoints.
+Handles adding/removing courts and coaches from user favorites.
+"""
+
 from fastapi import APIRouter, Depends
-from sqlmodel import Session
-from ..core.database import get_session
 from ..models.user import User
-from ..services.favorites_services import (
-    add_court_to_favorites,
-    remove_court_from_favorites,
-    list_favorite_courts,
-    add_coach_to_favorites,
-    remove_coach_from_favorites,
-    list_favorite_coaches,
-)
+from ..core.dependencies_services import get_favorites_service
+from ..services.favorites_services import FavoritesService
 from ..auth.dependencies import require_user
 
 router = APIRouter(prefix="/favorites", tags=["Favorites"])
 
 
 @router.post("/courts/{court_number}")
-def add_court_favorite(
+async def add_court_favorite(
     court_number: int,
-    session: Session = Depends(get_session),
     current_user: User = Depends(require_user),
+    service: FavoritesService = Depends(get_favorites_service),
 ):
-    return add_court_to_favorites(session, current_user, court_number)
+    """Add a court to user's favorite courts.
+    Args:
+        court_number: The court number to add.
+        current_user: The authenticated user.
+        service: FavoritesService instance.
+    Returns:
+        dict: Success message.
+    """
+    return await service.add_court_to_favorites(current_user, court_number)
 
 
 @router.delete("/courts/{court_number}")
-def remove_court_favorite(
+async def remove_court_favorite(
     court_number: int,
-    session: Session = Depends(get_session),
     current_user: User = Depends(require_user),
+    service: FavoritesService = Depends(get_favorites_service),
 ):
-    return remove_court_from_favorites(session, current_user, court_number)
+    """Remove a court from user's favorite courts.
+    Args:
+        court_number: The court number to remove.
+        current_user: The authenticated user.
+        service: FavoritesService instance.
+    Returns:
+        dict: Success message.
+    """
+    return await service.remove_court_from_favorites(current_user, court_number)
 
 
 @router.get("/courts")
-def get_favorite_courts(
+async def get_favorite_courts(
     current_user: User = Depends(require_user),
 ):
-    return list_favorite_courts(current_user)
+    """Get all of user's favorite courts.
+    Args:
+        current_user: The authenticated user.
+    Returns:
+        list: User's favorite courts.
+    """
+    return FavoritesService.list_favorite_courts(current_user)
 
 
 @router.post("/coaches/{coach_id}")
-def add_coach_favorite(
+async def add_coach_favorite(
     coach_id: int,
-    session: Session = Depends(get_session),
     current_user: User = Depends(require_user),
+    service: FavoritesService = Depends(get_favorites_service),
 ):
-    return add_coach_to_favorites(session, current_user, coach_id)
+    """Add a coach to user's favorite coaches.
+    Args:
+        coach_id: The coach user ID to add.
+        current_user: The authenticated user.
+        service: FavoritesService instance.
+    Returns:
+        dict: Success message.
+    """
+    return await service.add_coach_to_favorites(current_user, coach_id)
 
 
 @router.delete("/coaches/{coach_id}")
-def remove_coach_favorite(
+async def remove_coach_favorite(
     coach_id: int,
-    session: Session = Depends(get_session),
     current_user: User = Depends(require_user),
+    service: FavoritesService = Depends(get_favorites_service),
 ):
-    return remove_coach_from_favorites(session, current_user, coach_id)
+    """Remove a coach from user's favorite coaches.
+    Args:
+        coach_id: The coach user ID to remove.
+        current_user: The authenticated user.
+        service: FavoritesService instance.
+    Returns:
+        dict: Success message.
+    """
+    return await service.remove_coach_from_favorites(current_user, coach_id)
 
 
 @router.get("/coaches")
-def get_favorite_coaches(
+async def get_favorite_coaches(
     current_user: User = Depends(require_user),
 ):
-    return list_favorite_coaches(current_user)
+    """Get all of user's favorite coaches.
+    Args:
+        current_user: The authenticated user.
+    Returns:
+        list: User's favorite coaches.
+    """
+    return FavoritesService.list_favorite_coaches(current_user)

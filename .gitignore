@@ -3,4 +3,7 @@
 .env
 __pycache__/
 .mypy_cache/
-database.db
+acereserve.db
+.coverage
+htmlcov/
+.pytest_cache

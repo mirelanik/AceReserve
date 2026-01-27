@@ -1,3 +1,7 @@
+"""Reservation model and related schemas.
+Defines the Reservation entity with status tracking and pricing information.
+"""
+
 from enum import Enum
 from decimal import Decimal
 from datetime import datetime
@@ -13,6 +17,8 @@ if TYPE_CHECKING:
 
 
 class ReservationStatus(str, Enum):
+    """Reservation status enumeration."""
+
     PENDING = "Pending"
     CONFIRMED = "Confirmed"
     CANCELLED = "Cancelled"
@@ -20,6 +26,8 @@ class ReservationStatus(str, Enum):
 
 
 class ReservationBase(SQLModel):
+    """Base reservation data shared between models."""
+
     court_number: int = Field(foreign_key="courts.number")
     start_time: datetime
     duration_minutes: int = Field(default=60, ge=30)
@@ -31,6 +39,8 @@ class ReservationBase(SQLModel):
 
 
 class Reservation(ReservationBase, table=True):
+    """Reservation database model with relationships to users and courts."""
+
     __tablename__ = "reservations"  # type: ignore
     id: int | None = Field(default=None, primary_key=True)
     status: ReservationStatus = Field(default=ReservationStatus.PENDING)
@@ -39,17 +49,27 @@ class Reservation(ReservationBase, table=True):
     total_price: Decimal = Field(default=0.0)
     user_id: int = Field(foreign_key="users.id")
 
-    user: "User" = Relationship(back_populates="reservations")
-    court: "Court" = Relationship(back_populates="reservations")
+    user: "User" = Relationship(back_populates="reservations", sa_relationship_kwargs={"lazy": "selectin"})
+    court: "Court" = Relationship(back_populates="reservations", sa_relationship_kwargs={"lazy": "selectin"})
 
     @property
     def user_name(self) -> str:
+        """Get the name of the user who made this reservation."""
         return self.user.full_name
 
+
 class ReservationCreate(ReservationBase):
+    """Schema for creating a new reservation."""
+
     @field_validator("duration_minutes")
     @classmethod
     def enforce_valid_duration(cls, value: int):
+        """Validate that duration is a multiple of 30 minutes.
+        Args:
+            value: The duration in minutes.
+        Returns:
+            int: The validated duration.
+        """
         if value % 30 != 0:
             raise ValueError(
                 "Duration must be a multiple of 30 minutes (e.g. 30, 60, 90, etc.)"
@@ -58,6 +78,8 @@ class ReservationCreate(ReservationBase):
 
 
 class ReservationRead(ReservationBase):
+    """Schema for reading reservation information."""
+
     id: int
     status: ReservationStatus
     created_at: datetime
@@ -67,6 +89,8 @@ class ReservationRead(ReservationBase):
 
 
 class ReservationUpdate(SQLModel):
+    """Schema for updating reservation details."""
+
     court_number: int | None = None
     start_time: datetime | None = None
     duration_minutes: int | None = None

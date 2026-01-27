@@ -1,3 +1,5 @@
+"""Court model and related schemas."""
+
 from enum import Enum
 from decimal import Decimal
 from typing import TYPE_CHECKING
@@ -10,6 +12,8 @@ if TYPE_CHECKING:
 
 
 class Surface(str, Enum):
+    """Court surface material enumeration."""
+
     HARD = "hard"
     CLAY = "clay"
     GRASS = "grass"
@@ -17,6 +21,8 @@ class Surface(str, Enum):
 
 
 class CourtBase(SQLModel):
+    """Base court data shared between models."""
+
     number: int = Field(unique=True, index=True)
     surface: Surface
     open_time: str | None = Field(default="08:00")
@@ -27,11 +33,15 @@ class CourtBase(SQLModel):
 
 
 class Court(CourtBase, table=True):
+    """Court database model with relationships to reservations and reviews."""
+
     __tablename__ = "courts"  # type: ignore
     id: int | None = Field(default=None, primary_key=True)
 
-    reservations: list["Reservation"] = Relationship(back_populates="court")
-    reviews: list["Review"] = Relationship(back_populates="court")
+    reservations: list["Reservation"] = Relationship(back_populates="court", sa_relationship_kwargs={"lazy": "selectin"})
+    reviews: list["Review"] = Relationship(
+        back_populates="court", sa_relationship_kwargs={"lazy": "selectin"}
+    )
 
     favorited_by: list["User"] = Relationship(
         back_populates="favorite_courts",
@@ -40,8 +50,12 @@ class Court(CourtBase, table=True):
 
 
 class CourtCreate(CourtBase):
+    """Schema for creating a new court."""
+
     pass
 
 
 class CourtRead(CourtBase):
+    """Schema for reading court information."""
+
     pass

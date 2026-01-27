@@ -13,7 +13,7 @@ from ..services.court_service import CourtService
 router = APIRouter(prefix="/courts", tags=["Courts"])
 
 
-@router.post("/", response_model=CourtRead)
+@router.post("/", response_model=CourtRead, status_code=201)
 async def add_court(
     court_input: CourtCreate,
     current_user: User = Depends(require_admin),
@@ -30,7 +30,7 @@ async def add_court(
     return await service.create_court(court_input, current_user)
 
 
-@router.delete("/{court_number}")
+@router.delete("/{court_number}", status_code=200)
 async def delete_court(
     court_number: int,
     current_user: User = Depends(require_admin),
@@ -47,7 +47,7 @@ async def delete_court(
     return await service.remove_court(court_number, current_user)
 
 
-@router.get("/all", response_model=list[CourtRead])
+@router.get("/all", response_model=list[CourtRead], status_code=200)
 async def get_all_courts(service: CourtService = Depends(get_court_service)):
     """Get all courts in the system.
     Args:
@@ -58,7 +58,7 @@ async def get_all_courts(service: CourtService = Depends(get_court_service)):
     return await service.show_all_courts()
 
 
-@router.get("/{court_number}", response_model=CourtRead)
+@router.get("/{court_number}", response_model=CourtRead, status_code=200)
 async def get_current_court(
     court_number: int, service: CourtService = Depends(get_court_service)
 ):
@@ -72,7 +72,7 @@ async def get_current_court(
     return await service.show_court_by_number(court_number)
 
 
-@router.get("/", response_model=list[CourtRead])
+@router.get("/", response_model=list[CourtRead], status_code=200)
 async def get_courts_by_category(
     surface: str | None = Query(None, description="Search by surface"),
     lighting: bool | None = Query(None, description="Search by lighting"),

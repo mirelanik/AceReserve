@@ -104,14 +104,14 @@ class ServiceNotChosenError(AceReserveException):
     def __init__(
         self, detail: str = "There is no service chosen for this reservation."
     ):
-        super().__init__(status_code=404, detail=detail)
+        super().__init__(status_code=400, detail=detail)
 
 
 class NotLoggedInError(AceReserveException):
     """Raised when an unauthenticated user tries to access protected resources."""
 
     def __init__(self, detail: str = "Only logged-in users can perform this action."):
-        super().__init__(status_code=403, detail=detail)
+        super().__init__(status_code=401, detail=detail)
 
 
 class LoyaltyAccountNotFoundError(AceReserveException):
@@ -139,7 +139,7 @@ class FavoriteAlreadyExistsError(AceReserveException):
     """Raised when attempting to add a duplicate favorite."""
 
     def __init__(self, detail: str = "Already in your favorites."):
-        super().__init__(status_code=400, detail=detail)
+        super().__init__(status_code=409, detail=detail)
 
 
 class CoachNotFoundError(AceReserveException):

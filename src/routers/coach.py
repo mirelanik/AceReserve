@@ -13,7 +13,7 @@ from ..services.coach_service import CoachService
 router = APIRouter(prefix="/coach", tags=["Coaches"])
 
 
-@router.post("/services", response_model=ServiceRead)
+@router.post("/services", response_model=ServiceRead, status_code=201)
 async def create_service(
     service_input: ServiceCreate,
     current_coach: User = Depends(require_coach),
@@ -30,7 +30,7 @@ async def create_service(
     return await service.create_new_service(current_coach, service_input)
 
 
-@router.get("/reservations", response_model=list[ReservationRead])
+@router.get("/reservations", response_model=list[ReservationRead], status_code=200)
 async def get_coach_reservations(
     current_coach: User = Depends(require_coach),
     service: CoachService = Depends(get_coach_service),
@@ -45,7 +45,7 @@ async def get_coach_reservations(
     return await service.get_reservations_for_coach(current_coach)
 
 
-@router.get("/services", response_model=list[ServiceRead])
+@router.get("/services", response_model=list[ServiceRead], status_code=200)
 async def get_coach_services(
     current_coach: User = Depends(require_coach),
 ):
@@ -58,7 +58,7 @@ async def get_coach_services(
     return CoachService.get_services_by_coach(current_coach)
 
 
-@router.post("/reservations/{reservation_id}/confirm", response_model=ReservationRead)
+@router.post("/reservations/{reservation_id}/confirm", response_model=ReservationRead, status_code=200)
 async def confirm_reservation(
     reservation_id: int,
     current_coach: User = Depends(require_coach),
@@ -75,7 +75,7 @@ async def confirm_reservation(
     return await service.process_reservation_confirmation(current_coach, reservation_id)
 
 
-@router.get("/services/available", response_model=list[ServiceRead])
+@router.get("/services/available", response_model=list[ServiceRead], status_code=200)
 async def get_available_services(
     name: str | None = Query(None, description="Search by service name"),
     category: ServiceCategory | None = Query(None, description="Search by category"),
@@ -92,7 +92,7 @@ async def get_available_services(
     return await service.select_available_services(name, category)
 
 
-@router.delete("/services/{service_id}")
+@router.delete("/services/{service_id}", status_code=200)
 async def delete_service(
     service_id: int,
     current_user: User = Depends(require_coach),

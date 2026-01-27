@@ -15,7 +15,7 @@ from ..auth.dependencies import require_user, require_admin
 router = APIRouter(prefix="/users", tags=["Users"])
 
 
-@router.post("/register", response_model=UserRead)
+@router.post("/register", response_model=UserRead, status_code=201)
 async def register_user(
     user_input: UserCreate, service: UserService = Depends(get_user_service)
 ):
@@ -29,7 +29,7 @@ async def register_user(
     return await service.create_user(user_input)
 
 
-@router.post("/login")
+@router.post("/login", status_code=200)
 async def login(
     form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
     service: UserService = Depends(get_user_service),
@@ -53,7 +53,7 @@ async def login(
     return {"access_token": access_token, "token_type": "bearer"}
 
 
-@router.get("/me", response_model=UserRead)
+@router.get("/me", response_model=UserRead, status_code=200)
 async def show_current_user(current_user: UserRead = Depends(require_user)):
     """Get the current authenticated user's information.
     Args:
@@ -64,7 +64,7 @@ async def show_current_user(current_user: UserRead = Depends(require_user)):
     return current_user
 
 
-@router.post("/create-by-admin", response_model=UserRead)
+@router.post("/create-by-admin", response_model=UserRead, status_code=201)
 async def add_user_by_admin(
     user_input: UserCreate,
     role: Role = Role.USER,
@@ -83,7 +83,7 @@ async def add_user_by_admin(
     return await service.create_user_by_admin(user_input, role, current_user)
 
 
-@router.delete("/{user_id}")
+@router.delete("/{user_id}", status_code=200)
 async def delete_user(
     user_id: int,
     current_user: User = Depends(require_admin),

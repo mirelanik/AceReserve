@@ -12,7 +12,7 @@ from ..services.reservation_service import ReservationService
 router = APIRouter(prefix="/reservations", tags=["Reservations"])
 
 
-@router.post("/", response_model=ReservationRead)
+@router.post("/", response_model=ReservationRead, status_code=201)
 async def create_reservation(
     reservation_input: ReservationCreate,
     current_user: User = Depends(require_user),
@@ -32,7 +32,7 @@ async def create_reservation(
     return await service.process_reservation_creation(current_user, reservation_input)
 
 
-@router.get("/me", response_model=list[ReservationRead])
+@router.get("/me", response_model=list[ReservationRead], status_code=200)
 async def show_my_reservations(
     current_user: User = Depends(require_user),
     service: ReservationService = Depends(get_reservation_service),
@@ -47,7 +47,7 @@ async def show_my_reservations(
     return await service.get_user_reservations(current_user)
 
 
-@router.patch("/{reservation_id}")
+@router.patch("/{reservation_id}", status_code=200)
 async def cancel_reservation(
     reservation_id: int,
     current_user: User = Depends(require_user),
@@ -64,7 +64,7 @@ async def cancel_reservation(
     return await service.delete_reservation(current_user, reservation_id)
 
 
-@router.post("/{reservation_id}", response_model=ReservationRead)
+@router.post("/{reservation_id}", response_model=ReservationRead, status_code=200)
 async def edit_reservation(
     reservation_id: int,
     update_data: ReservationUpdate,

@@ -6,7 +6,7 @@ and registers all API routers.
 
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
-from .core.async_database import create_db_and_tables, close_db
+from .core.async_database import db
 from .routers import users, courts, reservations, loyalty, coach, favorites, reviews
 
 
@@ -19,9 +19,10 @@ async def lifespan(app: FastAPI):
     Args:
         app: The FastAPI application instance.
     """
-    await create_db_and_tables()
+    await db.create_tables()
+    await db.create_default_admin()
     yield
-    await close_db()
+    await db.close()
 
 
 app = FastAPI(lifespan=lifespan)

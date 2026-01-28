@@ -27,11 +27,9 @@ from ..models.reservation import (
 from ..models.user import User, Role
 from ..models.court import Court
 from ..models.service import Service
-from .loyalty_service import update_loyalty_level
-from .pricing_service import (
-    calculate_price,
-    calculate_earned_points,
-)
+from ..models.loyalty import LoyaltyAccount
+from .loyalty_service import LoyaltyService
+from .pricing_service import PricingService
 
 LIGHTING_START_HOUR = 19
 
@@ -189,12 +187,18 @@ class ReservationService:
             user: The user making the reservation.
             duration_minutes: Reservation duration in minutes.
         """
-        if not user.loyalty:
+
+        statement = select(LoyaltyAccount).where(LoyaltyAccount.user_id == user.id)
+        result = await self.session.execute(statement)
+        loyalty = result.scalars().first()
+
+        if not loyalty:
             return
 
-        points_earned = calculate_earned_points(duration_minutes)
-        update_loyalty_level(user.loyalty, points_earned)
-        self.session.add(user.loyalty)
+        points_earned = PricingService.calculate_earned_points(duration_minutes)
+        LoyaltyService.update_loyalty_level(loyalty, points_earned)
+        self.session.add(loyalty)
+        await self.session.flush()
 
     async def process_reservation_creation(
         self, user: User, data: ReservationCreate
@@ -208,14 +212,6 @@ class ReservationService:
             data: Reservation creation data.
         Returns:
             Reservation: The newly created confirmed reservation.
-        Raises:
-            CourtNotFoundError: If court doesn't exist.
-            StartTimeError: If start time is in the past.
-            DoubleCourtBookingError: If court is already booked.
-            LightingAvailabilityError: If lighting not available.
-            LightingTimeError: If lighting requested outside allowed hours.
-            ServiceNotFoundError: If service doesn't exist.
-            DoubleCoachBookingError: If coach is already booked.
         """
         end_time = self._calculate_end_time(data.start_time, data.duration_minutes)
 
@@ -236,7 +232,7 @@ class ReservationService:
 
         await self._validate_service(data.service_id, data.start_time, end_time)
 
-        total_price = calculate_price(court, data, user)
+        total_price = PricingService.calculate_price(court, data, user)
 
         reservation = Reservation(
             court_number=data.court_number,
@@ -279,9 +275,6 @@ class ReservationService:
             reservation_id: ID of the reservation to cancel.
         Returns:
             dict: Success message.
-        Raises:
-            ReservationNotFoundError: If reservation doesn't exist.
-            ForbiddenActionError: If user doesn't own the reservation (and isn't admin).
         """
         reservation = await self.session.get(Reservation, reservation_id)
         if not reservation:
@@ -312,11 +305,6 @@ class ReservationService:
             update_data: New values for reservation fields.
         Returns:
             Reservation: The updated reservation.
-        Raises:
-            ReservationNotFoundError: If reservation doesn't exist.
-            ForbiddenActionError: If user doesn't own the reservation (and isn't admin).
-            DoubleCourtBookingError: If new court/time is already booked.
-            CourtNotFoundError: If new court doesn't exist.
         """
         reservation = await self.session.get(Reservation, reservation_id)
         if not reservation:
@@ -378,7 +366,7 @@ class ReservationService:
             service_id=reservation.service_id,
         )
 
-        new_price = calculate_price(court, temp_create_data, user)
+        new_price = PricingService.calculate_price(court, temp_create_data, user)
         reservation.total_price = new_price
 
         self.session.add(reservation)

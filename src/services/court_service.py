@@ -14,7 +14,6 @@ from ..models.user import User
 
 class CourtService:
     """Service for managing tennis courts.
-
     Handles court creation, deletion, availability checking, and filtering.
     """
 

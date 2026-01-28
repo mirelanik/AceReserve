@@ -15,13 +15,11 @@ from ..core.exceptions import (
 
 class FavoritesService:
     """Service for managing user favorite courts and coaches.
-
     Handles adding/removing favorites and retrieving user's favorite lists.
     """
 
     def __init__(self, session: AsyncSession):
         """Initialize FavoritesService with database session.
-
         Args:
             session: Async SQLAlchemy database session.
         """
@@ -29,17 +27,11 @@ class FavoritesService:
 
     async def add_court_to_favorites(self, user: User, court_number: int) -> dict:
         """Add a court to user's favorite courts.
-
         Args:
             user: The user adding the favorite.
             court_number: The court number to add.
-
         Returns:
             dict: Success message.
-
-        Raises:
-            CourtNotFoundError: If court doesn't exist.
-            FavoriteAlreadyExistsError: If court is already a favorite.
         """
         result = await self.session.execute(
             select(Court).where(Court.number == court_number)
@@ -59,11 +51,9 @@ class FavoritesService:
 
     async def remove_court_from_favorites(self, user: User, court_number: int) -> dict:
         """Remove a court from user's favorite courts.
-
         Args:
             user: The user removing the favorite.
             court_number: The court number to remove.
-
         Returns:
             dict: Success message.
         """
@@ -81,10 +71,8 @@ class FavoritesService:
     @staticmethod
     def list_favorite_courts(user: User) -> list[Court]:
         """Get all of user's favorite courts.
-
         Args:
             user: The user.
-
         Returns:
             list[Court]: User's favorite courts.
         """
@@ -92,17 +80,11 @@ class FavoritesService:
 
     async def add_coach_to_favorites(self, user: User, coach_id: int) -> dict:
         """Add a coach to user's favorite coaches.
-
         Args:
             user: The user adding the favorite.
             coach_id: The coach user ID to add.
-
         Returns:
             dict: Success message.
-
-        Raises:
-            CoachNotFoundError: If coach doesn't exist or isn't a coach.
-            FavoriteAlreadyExistsError: If coach is already a favorite.
         """
         coach = await self.session.get(User, coach_id)
         if not coach or coach.role != Role.COACH:
@@ -119,11 +101,9 @@ class FavoritesService:
 
     async def remove_coach_from_favorites(self, user: User, coach_id: int) -> dict:
         """Remove a coach from user's favorite coaches.
-
         Args:
             user: The user removing the favorite.
             coach_id: The coach user ID to remove.
-
         Returns:
             dict: Success message.
         """
@@ -138,10 +118,8 @@ class FavoritesService:
     @staticmethod
     def list_favorite_coaches(user: User) -> list[User]:
         """Get all of user's favorite coaches.
-
         Args:
             user: The user.
-
         Returns:
             list[User]: User's favorite coaches.
         """

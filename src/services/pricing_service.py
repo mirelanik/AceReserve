@@ -27,7 +27,6 @@ POINTS_PER_HOUR = 10
 
 class PricingService:
     """Service for price calculations and loyalty point management.
-
     Handles reservation pricing with loyalty discounts and loyalty point calculations.
     """
 
@@ -42,15 +41,12 @@ class PricingService:
     @staticmethod
     def calculate_price(court: Court, data: ReservationCreate, user: User) -> Decimal:
         """Calculate total reservation price with loyalty discounts.
-
         Computes base court rental cost, adds extras, applies loyalty discount,
         and returns final price rounded to 2 decimal places.
-
         Args:
             court: The court being reserved.
             data: Reservation details including extras.
             user: The user making the reservation (for discount calculation).
-
         Returns:
             Decimal: The final price after all calculations and discounts.
         """
@@ -81,40 +77,11 @@ class PricingService:
     @staticmethod
     def calculate_earned_points(duration_minutes: int) -> int:
         """Calculate loyalty points earned from a reservation.
-
         Awards points based on hours reserved at a fixed rate per hour.
-
         Args:
             duration_minutes: Duration of the reservation in minutes.
-
         Returns:
             int: Loyalty points earned.
         """
         return int((duration_minutes / 60) * POINTS_PER_HOUR)
 
-
-# Module-level functions for backward compatibility
-def calculate_price(court: Court, data: ReservationCreate, user: User) -> Decimal:
-    """Calculate total reservation price with loyalty discounts (module-level function).
-
-    Args:
-        court: The court being reserved.
-        data: Reservation details including extras.
-        user: The user making the reservation (for discount calculation).
-
-    Returns:
-        Decimal: The final price after all calculations and discounts.
-    """
-    return PricingService.calculate_price(court, data, user)
-
-
-def calculate_earned_points(duration_minutes: int) -> int:
-    """Calculate loyalty points earned from a reservation (module-level function).
-
-    Args:
-        duration_minutes: Duration of the reservation in minutes.
-
-    Returns:
-        int: Loyalty points earned.
-    """
-    return PricingService.calculate_earned_points(duration_minutes)

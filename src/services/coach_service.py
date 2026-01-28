@@ -18,13 +18,11 @@ from ..core.exceptions import (
 
 class CoachService:
     """Service for managing coaching services.
-
     Handles service creation, deletion, reservation management, and availability filtering.
     """
 
     def __init__(self, session: AsyncSession):
         """Initialize CoachService with database session.
-
         Args:
             session: Async SQLAlchemy database session.
         """
@@ -34,18 +32,12 @@ class CoachService:
         self, user: User, service_input: ServiceCreate
     ) -> Service:
         """Create a new coaching service.
-
         Admin can create services for any coach, coaches create for themselves.
-
         Args:
             user: The coach or admin creating the service.
             service_input: Service creation data.
-
         Returns:
             Service: The newly created service.
-
-        Raises:
-            ServiceNotFoundError: If specified coach doesn't exist or isn't a coach.
         """
         target_coach = None
         target_coach_id = None
@@ -81,10 +73,8 @@ class CoachService:
     @staticmethod
     def get_services_by_coach(user: User) -> list[Service]:
         """Get all services provided by a coach.
-
         Args:
             user: The coach user.
-
         Returns:
             list[Service]: All services for this coach.
         """
@@ -92,10 +82,8 @@ class CoachService:
 
     async def get_reservations_for_coach(self, user: User) -> Sequence[Reservation]:
         """Get all reservations for a coach's services.
-
         Args:
             user: The coach user.
-
         Returns:
             Sequence[Reservation]: All reservations for coach's services.
         """
@@ -116,18 +104,11 @@ class CoachService:
         self, user: User, reservation_id: int
     ) -> Reservation:
         """Confirm a pending reservation (coach only).
-
         Args:
             user: The coach confirming the reservation.
             reservation_id: ID of the reservation to confirm.
-
         Returns:
             Reservation: The confirmed reservation.
-
-        Raises:
-            ReservationNotFoundError: If reservation doesn't exist.
-            ServiceNotChosenError: If reservation has no service.
-            ForbiddenActionError: If user's coach isn't serving the reservation.
         """
         reservation = await self.session.get(Reservation, reservation_id)
         if not reservation:
@@ -155,11 +136,9 @@ class CoachService:
         category: ServiceCategory | None = None,
     ) -> Sequence[Service]:
         """Get available coaching services, optionally filtered.
-
         Args:
             name: Filter by service name (substring match).
             category: Filter by service category.
-
         Returns:
             Sequence[Service]: Available services matching filters.
         """
@@ -176,14 +155,11 @@ class CoachService:
 
     async def remove_service(self, service_id: int, current_user: User) -> dict:
         """Delete a coaching service.
-
         Args:
             service_id: ID of the service to delete.
             current_user: The user requesting deletion.
-
         Returns:
             dict: Success message.
-
         Raises:
             ServiceNotFoundError: If service doesn't exist.
         """

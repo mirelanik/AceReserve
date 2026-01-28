@@ -43,7 +43,9 @@ class LoyaltyAccount(LoyaltyAccountBase, table=True):
     user_id: int = Field(foreign_key="users.id", unique=True)
     updated_at: datetime = Field(default_factory=datetime.now)
 
-    user: "User" = Relationship(back_populates="loyalty", sa_relationship_kwargs={"lazy": "selectin"})
+    user: "User" = Relationship(
+        back_populates="loyalty", sa_relationship_kwargs={"lazy": "selectin"}
+    )
 
     @property
     def user_name(self) -> str | None:

@@ -47,10 +47,10 @@ async def get_current_user(
         user_id: str = payload.get("sub")
         if user_id is None:
             raise CredentialsError()
-    except ExpiredSignatureError:
-        raise CredentialsError(detail="Token has expired.")
-    except InvalidTokenError:
-        raise CredentialsError(detail="Invalid token.")
+    except ExpiredSignatureError as exc:
+        raise CredentialsError(detail="Token has expired.") from exc
+    except InvalidTokenError as exc:
+        raise CredentialsError(detail="Invalid token.") from exc
 
     user = await session.get(User, int(user_id))
     if user is None:

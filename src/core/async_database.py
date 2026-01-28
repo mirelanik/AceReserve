@@ -93,7 +93,7 @@ class DatabaseService:
                 )
                 session.add(admin_user)
                 await session.commit()
-                print(f"Admin user created.")
+                print("Admin user created.")
 
 
 db = DatabaseService()
@@ -101,9 +101,7 @@ db = DatabaseService()
 
 async def get_async_session() -> AsyncGenerator[AsyncSession, None]:
     """Provide an async database session for FastAPI dependencies.
-
-    This function wraps the db instance's get_session method for use as a FastAPI Depends() dependency.
-
+    Wraps the db instance's get_session method for use as a FastAPI Depends() dependency.
     Yields:
         AsyncSession: Database session for use in dependencies.
     """

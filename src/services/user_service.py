@@ -12,6 +12,8 @@ from ..models.reservation import Reservation, ReservationStatus
 
 
 class UserService:
+    """Service for managing users.
+    Handles user creation, authentication, and admin operations."""
     def __init__(self, session: AsyncSession):
         """Initialize UserService with database session.
         Args:

@@ -59,7 +59,11 @@ class User(UserBase, table=True):
 
     loyalty: Optional["LoyaltyAccount"] = Relationship(
         back_populates="user",
-        sa_relationship_kwargs={"uselist": False, "lazy": "selectin", "cascade": "all, delete-orphan"},
+        sa_relationship_kwargs={
+            "uselist": False,
+            "lazy": "selectin",
+            "cascade": "all, delete-orphan",
+        },
     )
     reservations: list["Reservation"] = Relationship(
         back_populates="user",

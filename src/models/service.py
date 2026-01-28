@@ -41,7 +41,9 @@ class Service(ServiceBase, table=True):
     coach: "User" = Relationship(
         back_populates="services", sa_relationship_kwargs={"lazy": "selectin"}
     )
-    reviews: list["Review"] = Relationship(back_populates="service", sa_relationship_kwargs={"lazy": "selectin"})
+    reviews: list["Review"] = Relationship(
+        back_populates="service", sa_relationship_kwargs={"lazy": "selectin"}
+    )
 
     @property
     def coach_name(self) -> str:

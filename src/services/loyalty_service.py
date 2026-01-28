@@ -79,4 +79,3 @@ class LoyaltyService:
         await self.session.refresh(loyalty_account)
 
         return loyalty_account
-

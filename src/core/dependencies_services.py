@@ -1,6 +1,8 @@
+"""Dependency injection functions for service instances with database sessions."""
+
 from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi import Depends
-from ..core.async_database import db, get_async_session
+from ..core.async_database import get_async_session
 from ..services.reservation_service import ReservationService
 from ..services.user_service import UserService
 from ..services.court_service import CourtService

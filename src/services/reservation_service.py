@@ -51,7 +51,7 @@ class ReservationService:
         Returns:
             Reservation: The newly created confirmed reservation.
         """
-        end_time = self.validator._calculate_end_time(
+        end_time = self.validator.calculate_end_time(
             data.start_time, data.duration_minutes
         )
 
@@ -62,15 +62,15 @@ class ReservationService:
         if not court:
             raise CourtNotFoundError()
 
-        await self.validator._validate_court_availability(
+        await self.validator.validate_court_availability(
             data.court_number, data.start_time, end_time
         )
 
-        self.validator._validate_lighting_requirements(
+        self.validator.validate_lighting_requirements(
             court, data.start_time, data.wants_lighting
         )
 
-        await self.validator._validate_service(
+        await self.validator.validate_service(
             data.service_id, data.start_time, end_time
         )
 
@@ -92,7 +92,7 @@ class ReservationService:
 
         self.session.add(reservation)
 
-        await self.validator._update_user_loyalty(user, data.duration_minutes)
+        await self.validator.update_user_loyalty(user, data.duration_minutes)
 
         await self.session.commit()
         await self.session.refresh(reservation)
@@ -162,7 +162,7 @@ class ReservationService:
         )
         new_start_time = update_data.start_time or reservation.start_time
         new_duration = update_data.duration_minutes or reservation.duration_minutes
-        new_end_time = self.validator._calculate_end_time(new_start_time, new_duration)
+        new_end_time = self.validator.calculate_end_time(new_start_time, new_duration)
 
         time_changed = (new_start_time != reservation.start_time) or (
             new_duration != reservation.duration_minutes
@@ -170,7 +170,7 @@ class ReservationService:
         court_changed = new_court_number != reservation.court_number
 
         if time_changed or court_changed:
-            await self.validator._validate_court_availability(
+            await self.validator.validate_court_availability(
                 new_court_number,
                 new_start_time,
                 new_end_time,

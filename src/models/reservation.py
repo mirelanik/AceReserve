@@ -49,8 +49,12 @@ class Reservation(ReservationBase, table=True):
     total_price: Decimal = Field(default=0.0)
     user_id: int = Field(foreign_key="users.id")
 
-    user: "User" = Relationship(back_populates="reservations", sa_relationship_kwargs={"lazy": "selectin"})
-    court: "Court" = Relationship(back_populates="reservations", sa_relationship_kwargs={"lazy": "selectin"})
+    user: "User" = Relationship(
+        back_populates="reservations", sa_relationship_kwargs={"lazy": "selectin"}
+    )
+    court: "Court" = Relationship(
+        back_populates="reservations", sa_relationship_kwargs={"lazy": "selectin"}
+    )
 
     @property
     def user_name(self) -> str:

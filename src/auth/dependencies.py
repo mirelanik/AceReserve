@@ -3,9 +3,9 @@ Defines role hierarchy and provides role-checking dependency injectors.
 """
 
 from fastapi import Depends
+from fastapi import HTTPException, status
 from ..models.user import User, Role
 from .security import get_current_user
-from fastapi import HTTPException, status
 
 ROLE_HIERARCHY = {
     Role.GUEST: 0,

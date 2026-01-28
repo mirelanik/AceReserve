@@ -25,6 +25,8 @@ LIGHTING_START_HOUR = 19
 
 
 class ValidationHelpers:
+    """Helper class for validating reservations and services."""
+    
     def __init__(self, session: AsyncSession):
         """Initialize ValidationHelpers with database session.
         Args:
@@ -32,7 +34,7 @@ class ValidationHelpers:
         """
         self.session = session
 
-    async def _validate_court_availability(
+    async def validate_court_availability(
         self,
         court_number: int,
         start_time: datetime,
@@ -67,7 +69,7 @@ class ValidationHelpers:
         if conflict:
             raise DoubleCourtBookingError()
 
-    async def _validate_coach_availability(
+    async def validate_coach_availability(
         self,
         coach_id: int | None,
         start_time: datetime,
@@ -101,7 +103,7 @@ class ValidationHelpers:
         if conflict:
             raise DoubleCoachBookingError()
 
-    def _validate_lighting_requirements(
+    def validate_lighting_requirements(
         self, court: Court, start_time: datetime, wants_lighting: bool
     ) -> None:
         """Validate that court supports lighting and time is appropriate.
@@ -122,7 +124,7 @@ class ValidationHelpers:
         if start_time.hour < LIGHTING_START_HOUR:
             raise LightingTimeError()
 
-    async def _validate_service(
+    async def validate_service(
         self,
         service_id: int | None,
         start_time: datetime,
@@ -146,13 +148,13 @@ class ValidationHelpers:
             raise ServiceNotFoundError()
 
         if service.requires_coach:
-            await self._validate_coach_availability(
+            await self.validate_coach_availability(
                 service.coach_id, start_time, end_time
             )
 
         return service
 
-    def _calculate_end_time(
+    def calculate_end_time(
         self, start_time: datetime, duration_minutes: int
     ) -> datetime:
         """Calculate reservation end time from start time and duration.
@@ -165,7 +167,7 @@ class ValidationHelpers:
         end_time = start_time + timedelta(minutes=duration_minutes)
         return end_time
 
-    async def _update_user_loyalty(self, user: User, duration_minutes: int) -> None:
+    async def update_user_loyalty(self, user: User, duration_minutes: int) -> None:
         """Award loyalty points for a completed reservation.
         Args:
             user: The user making the reservation.

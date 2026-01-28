@@ -38,7 +38,9 @@ class Court(CourtBase, table=True):
     __tablename__ = "courts"  # type: ignore
     id: int | None = Field(default=None, primary_key=True)
 
-    reservations: list["Reservation"] = Relationship(back_populates="court", sa_relationship_kwargs={"lazy": "selectin"})
+    reservations: list["Reservation"] = Relationship(
+        back_populates="court", sa_relationship_kwargs={"lazy": "selectin"}
+    )
     reviews: list["Review"] = Relationship(
         back_populates="court", sa_relationship_kwargs={"lazy": "selectin"}
     )

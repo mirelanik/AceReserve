@@ -4,6 +4,7 @@ This module sets up the FastAPI application, configures the database lifecycle,
 and registers all API routers.
 """
 
+import os
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from .core.async_database import db
@@ -19,10 +20,14 @@ async def lifespan(app: FastAPI):
     Args:
         app: The FastAPI application instance.
     """
+
     await db.create_tables()
-    await db.create_default_admin()
-    yield
-    await db.close()
+    if os.getenv("PYTEST_CURRENT_TEST") is None:
+        await db.create_default_admin()
+    try:
+        yield
+    finally:
+        await db.close()
 
 
 app = FastAPI(lifespan=lifespan)

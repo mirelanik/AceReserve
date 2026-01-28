@@ -11,7 +11,7 @@ from jwt.exceptions import InvalidTokenError, ExpiredSignatureError
 from sqlalchemy.ext.asyncio import AsyncSession
 from ..core.config import settings
 from ..core.exceptions import CredentialsError
-from ..core.async_database import db
+from ..core.async_database import get_async_session
 from ..models.user import User
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/users/login")
@@ -33,7 +33,7 @@ def create_access_token(data: dict) -> str:
 
 async def get_current_user(
     token: str = Depends(oauth2_scheme),
-    session: AsyncSession = Depends(db.get_async_session),
+    session: AsyncSession = Depends(get_async_session),
 ) -> User:
     """Get the current authenticated user from JWT token.
     Args:

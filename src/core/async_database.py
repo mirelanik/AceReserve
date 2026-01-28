@@ -43,7 +43,7 @@ class DatabaseService:
             url = url.replace("sqlite://", "sqlite+aiosqlite:///")
         return url
 
-    async def get_async_session(self) -> AsyncGenerator[AsyncSession, None]:
+    async def get_session(self) -> AsyncGenerator[AsyncSession, None]:
         """Get an async database session for dependency injection.
 
         Yields:
@@ -97,3 +97,15 @@ class DatabaseService:
 
 
 db = DatabaseService()
+
+
+async def get_async_session() -> AsyncGenerator[AsyncSession, None]:
+    """Provide an async database session for FastAPI dependencies.
+
+    This function wraps the db instance's get_session method for use as a FastAPI Depends() dependency.
+
+    Yields:
+        AsyncSession: Database session for use in dependencies.
+    """
+    async with db.async_session() as session:
+        yield session

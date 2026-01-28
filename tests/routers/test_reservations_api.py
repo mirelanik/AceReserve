@@ -1,6 +1,6 @@
 import pytest
 from datetime import datetime, timedelta, timezone
-from src.models.reservation import ReservationCreate, ReservationStatus, Reservation
+from src.models.reservation import ReservationCreate, ReservationStatus
 from src.services.reservation_service import ReservationService
 from ..conftest import get_auth_header
 

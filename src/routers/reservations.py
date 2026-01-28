@@ -64,7 +64,7 @@ async def cancel_reservation(
     return await service.delete_reservation(current_user, reservation_id)
 
 
-@router.post("/{reservation_id}", response_model=ReservationRead, status_code=200)
+@router.put("/{reservation_id}", response_model=ReservationRead, status_code=200)
 async def edit_reservation(
     reservation_id: int,
     update_data: ReservationUpdate,

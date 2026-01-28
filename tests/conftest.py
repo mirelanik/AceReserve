@@ -12,6 +12,10 @@ from src.auth.hashing import get_password_hash
 pytest_plugins = ("pytest_asyncio",)
 
 
+def pytest_configure(config):
+    config.option.asyncio_mode = "auto"
+
+
 @pytest.fixture
 async def test_db():
     """Create an in-memory database for testing with automatic cleanup"""
@@ -76,7 +80,7 @@ async def sample_user_other(session):
     user = User(
         email="other@example.com",
         full_name="Other User",
-        hashed_password=get_password_hash("password123"), 
+        hashed_password=get_password_hash("password123"),
     )
     session.add(user)
     await session.commit()
@@ -87,6 +91,23 @@ async def sample_user_other(session):
     await session.commit()
 
     return user
+
+
+@pytest.fixture
+async def sample_coach(test_db):
+    """Create a test coach user"""
+    async with test_db.async_session() as session:
+        coach = User(
+            email="coach@test.com",
+            full_name="Coach User",
+            hashed_password=get_password_hash("hashed_pwd"),
+            role=Role.COACH,
+        )
+    session.add(coach)
+    await session.commit()
+    await session.refresh(coach)
+
+    return coach
 
 
 @pytest.fixture

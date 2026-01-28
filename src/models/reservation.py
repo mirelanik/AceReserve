@@ -81,6 +81,7 @@ class ReservationRead(ReservationBase):
     """Schema for reading reservation information."""
 
     id: int
+    user_id: int
     status: ReservationStatus
     created_at: datetime
     user_name: str

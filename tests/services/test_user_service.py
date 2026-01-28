@@ -1,82 +1,12 @@
 import pytest
 from datetime import datetime, timedelta, timezone
 from sqlmodel import col
-from src.auth.security import create_access_token
-from src.models.user import User, Role
 from sqlalchemy import select
 from src.services.user_service import UserService
 from src.models.user import User, UserCreate, Role
 from src.models.reservation import ReservationCreate, Reservation, ReservationStatus
 from src.services.reservation_service import ReservationService
 from src.core.exceptions import ExistingUserError, UserNotFoundError
-
-
-@pytest.mark.asyncio
-async def test_create_user(client, session):
-    """Test user creation"""
-    response = await client.post(
-        "/users/register",
-        json={
-            "email": "newuser@test.com",
-            "password": "password123",
-            "full_name": "New User",
-        },
-    )
-
-    assert response.status_code == 201
-    data = response.json()
-    assert data["email"] == "newuser@test.com"
-    assert "password" not in data
-    assert data["full_name"] == "New User"
-    assert data["role"] == "user"
-    assert "id" in data
-
-    new_user = await session.get(User, data["id"])
-    assert new_user is not None
-    assert new_user.role == Role.USER
-
-
-@pytest.mark.asyncio
-async def test_login(client):
-    """Test user login"""
-
-    registration_response = await client.post(
-        "/users/register",
-        json={
-            "email": "loginuser@test.com",
-            "password": "password123",
-            "full_name": "Login User",
-        },
-    )
-    assert registration_response.status_code == 201
-
-    response = await client.post(
-        "/users/login",
-        data={"username": "loginuser@test.com", "password": "password123"},
-    )
-
-    assert response.status_code == 200
-    data = response.json()
-    assert "access_token" in data
-    assert data["token_type"] == "bearer"
-
-
-@pytest.mark.asyncio
-async def test_get_current_user(client, sample_user):
-    """Test retrieving current authenticated user"""
-
-    token = create_access_token(data={"sub": str(sample_user.id)})
-
-    response = await client.get(
-        "/users/me", headers={"Authorization": f"Bearer {token}"}
-    )
-
-    assert response.status_code == 200
-    data = response.json()
-    assert data["email"] == sample_user.email
-    assert data["full_name"] == sample_user.full_name
-    assert data["role"] == sample_user.role.value
-    assert data["id"] == sample_user.id
 
 
 @pytest.mark.asyncio

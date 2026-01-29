@@ -15,7 +15,6 @@ from src.core.exceptions import (
 async def sample_service_data():
     return ServiceCreate(
         name="Advanced Tennis",
-        description="Pro level training",
         price=Decimal("80.00"),
         duration_minutes=60,
         category=ServiceCategory.INDIVIDUAL,

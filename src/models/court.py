@@ -12,8 +12,7 @@ if TYPE_CHECKING:
 
 
 class Surface(str, Enum):
-    """Court surface material enumeration."""
-
+    """Court surface type enum."""
     HARD = "hard"
     CLAY = "clay"
     GRASS = "grass"
@@ -25,11 +24,8 @@ class CourtBase(SQLModel):
 
     number: int = Field(unique=True, index=True)
     surface: Surface
-    open_time: str | None = Field(default="08:00")
-    close_time: str | None = Field(default="22:00")
     has_lighting: bool = Field(default=False)
     price_per_hour: Decimal = Field(default=25.0, ge=15.0)
-    available: bool = Field(default=True)
 
 
 class Court(CourtBase, table=True):

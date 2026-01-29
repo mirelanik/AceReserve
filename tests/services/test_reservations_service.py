@@ -230,7 +230,6 @@ async def test_reservation_with_service(session, sample_user, sample_court):
 
     service_obj = Service(
         name="Ball Rental",
-        description="Rental of tennis balls",
         price=Decimal("10.00"),
         duration_minutes=60,
     )

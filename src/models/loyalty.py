@@ -20,14 +20,6 @@ class LoyaltyLevel(str, Enum):
     PLATINUM = "platinum"
 
 
-class LoyaltyPointsType(str, Enum):
-    """Type of loyalty point transaction."""
-
-    EARNED = "earned"
-    USED = "used"
-    EXPIRED = "expired"
-
-
 class LoyaltyAccountBase(SQLModel):
     """Base loyalty account data shared between models."""
 

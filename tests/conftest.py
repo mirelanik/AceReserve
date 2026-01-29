@@ -151,7 +151,6 @@ async def sample_service(session):
     """Create a test service."""
     service = Service(
         name="Tennis Lessons",
-        description="One-on-one lessons",
         price=Decimal("50.00"),
         duration_minutes=60,
     )

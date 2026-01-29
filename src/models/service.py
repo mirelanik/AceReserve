@@ -23,7 +23,6 @@ class ServiceBase(SQLModel):
     """Base service data shared between models."""
 
     name: str = Field(index=True)
-    description: str | None = None
     price: Decimal = Field(gt=0)
     duration_minutes: int = Field(gt=0)
     is_available: bool = Field(default=True)

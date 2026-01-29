@@ -7,6 +7,7 @@ from src.auth.security import create_access_token
 from src.models.user import User, Role
 from src.models.loyalty import LoyaltyAccount, LoyaltyLevel
 from src.models.court import Court, Surface
+from src.models.service import Service
 from src.auth.hashing import get_password_hash
 
 pytest_plugins = ("pytest_asyncio",)
@@ -143,6 +144,21 @@ async def sample_court(test_db):
         await session.refresh(court)
 
     return court
+
+
+@pytest.fixture
+async def sample_service(session):
+    """Create a test service."""
+    service = Service(
+        name="Tennis Lessons",
+        description="One-on-one lessons",
+        price=Decimal("50.00"),
+        duration_minutes=60,
+    )
+    session.add(service)
+    await session.commit()
+    await session.refresh(service)
+    return service
 
 
 def get_auth_header(user_id: int):

@@ -7,12 +7,10 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlmodel import select, col
 from ..models.service import Service, ServiceCreate, ServiceCategory
 from ..models.user import User, Role
-from ..models.reservation import Reservation, ReservationStatus
+from ..models.reservation import Reservation
 from ..core.exceptions import (
-    ReservationNotFoundError,
-    ServiceNotChosenError,
-    ForbiddenActionError,
-    ServiceNotFoundError,
+    CoachNotFoundError,
+    ServiceNotFoundError
 )
 
 
@@ -51,7 +49,7 @@ class CoachService:
             found_coach = await self.session.get(User, service_input.coach_id)
 
             if not found_coach or found_coach.role != Role.COACH:
-                raise ServiceNotFoundError()
+                raise CoachNotFoundError()
 
             target_coach_id = found_coach.id
             target_coach = found_coach
@@ -100,35 +98,6 @@ class CoachService:
 
         return reservations
 
-    async def process_reservation_confirmation(
-        self, user: User, reservation_id: int
-    ) -> Reservation:
-        """Confirm a pending reservation (coach only).
-        Args:
-            user: The coach confirming the reservation.
-            reservation_id: ID of the reservation to confirm.
-        Returns:
-            Reservation: The confirmed reservation.
-        """
-        reservation = await self.session.get(Reservation, reservation_id)
-        if not reservation:
-            raise ReservationNotFoundError()
-
-        service = await self.session.get(Service, reservation.service_id)
-
-        if not service:
-            raise ServiceNotChosenError()
-
-        if service.coach_id != user.id:
-            raise ForbiddenActionError()
-
-        reservation.status = ReservationStatus.CONFIRMED
-
-        self.session.add(reservation)
-        await self.session.commit()
-        await self.session.refresh(reservation)
-
-        return reservation
 
     async def select_available_services(
         self,
@@ -142,7 +111,7 @@ class CoachService:
         Returns:
             Sequence[Service]: Available services matching filters.
         """
-        statement = select(Service).where(Service.is_available is True)
+        statement = select(Service).where(Service.is_available == True)
 
         if name:
             statement = statement.where(col(Service.name).ilike(f"%{name}%"))

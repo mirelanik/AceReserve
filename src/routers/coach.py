@@ -58,23 +58,6 @@ async def get_coach_services(
     return CoachService.get_services_by_coach(current_coach)
 
 
-@router.post("/reservations/{reservation_id}/confirm", response_model=ReservationRead, status_code=200)
-async def confirm_reservation(
-    reservation_id: int,
-    current_coach: User = Depends(require_coach),
-    service: CoachService = Depends(get_coach_service),
-):
-    """Confirm a pending reservation for coach's service.
-    Args:
-        reservation_id: ID of the reservation to confirm.
-        current_coach: The authenticated coach user.
-        service: CoachService instance.
-    Returns:
-        ReservationRead: The confirmed reservation.
-    """
-    return await service.process_reservation_confirmation(current_coach, reservation_id)
-
-
 @router.get("/services/available", response_model=list[ServiceRead], status_code=200)
 async def get_available_services(
     name: str | None = Query(None, description="Search by service name"),

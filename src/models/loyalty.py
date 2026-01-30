@@ -42,7 +42,7 @@ class LoyaltyAccount(LoyaltyAccountBase, table=True):
 
 
 class LoyaltyAccountRead(LoyaltyAccountBase):
-    pass
+    user_id: int
 
 
 class LoyaltyAdjust(SQLModel):

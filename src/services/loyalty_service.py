@@ -35,18 +35,24 @@ class LoyaltyService:
         else:
             account.level = LoyaltyLevel.BEGINNER
 
-    @staticmethod
-    def get_loyalty_info(user: User) -> dict:
-        if not user.loyalty:
-            return {"points": 0, "level": LoyaltyLevel.BEGINNER}
-        return {"points": user.loyalty.points, "level": user.loyalty.level}
+    async def get_loyalty_info(self, user: User) -> dict:
+        result = await self.session.execute(
+            select(LoyaltyAccount).where(LoyaltyAccount.user_id == user.id)
+        )
+        loyalty_account = result.scalars().first()
+
+        if not loyalty_account:
+            return LoyaltyAccount(
+                user_id=user.id, points=0, level=LoyaltyLevel.BEGINNER
+            )
+        return loyalty_account
 
     async def change_loyalty_points(
-        self, user: User, adjustment: int
+        self, user_id: int, adjustment: int
     ) -> LoyaltyAccount:
         """Adjust a user's loyalty points (admin only)."""
         result = await self.session.execute(
-            select(LoyaltyAccount).where(LoyaltyAccount.user_id == user.id)
+            select(LoyaltyAccount).where(LoyaltyAccount.user_id == user_id)
         )
         loyalty_account = result.scalars().first()
 

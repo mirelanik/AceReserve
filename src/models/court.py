@@ -23,6 +23,7 @@ class CourtBase(SQLModel):
     surface: Surface
     has_lighting: bool = Field(default=False)
     price_per_hour: Decimal = Field(default=25.0, ge=15.0)
+    available: bool = Field(default=True)
 
 
 class Court(CourtBase, table=True):

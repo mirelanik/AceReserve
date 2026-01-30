@@ -6,7 +6,7 @@ from sqlalchemy.orm import selectinload
 from src.models.reservation import ReservationCreate
 from src.models.user import User
 from src.services.pricing_service import PricingService
-from src.models.loyalty import LoyaltyLevel
+from src.models.loyalty import LoyaltyLevel, LoyaltyAccount
 
 
 @pytest.mark.asyncio
@@ -29,21 +29,26 @@ async def test_calculate_price_beginner_no_extras(session, sample_user, sample_c
 @pytest.mark.asyncio
 async def test_calculate_price_gold_with_extras(session, sample_user, sample_court):
     service = PricingService(session)
-
-    stmt = (
-        select(User)
-        .options(selectinload(User.loyalty))  # type: ignore
-        .where(User.id == sample_user.id)
-    )
-    result = await session.execute(stmt)
-    user = result.scalar_one()
-
+    user = await session.get(User, sample_user.id)
     court = await session.merge(sample_court)
+    
+    statement = select(LoyaltyAccount).where(LoyaltyAccount.user_id == user.id)
+    result = await session.execute(statement)
+    loyalty_account= result.scalars().first()
+    
+    if loyalty_account:
+        loyalty_account.level = LoyaltyLevel.GOLD
+        session.add(loyalty_account)
+    else:
+        loyalty_account = LoyaltyAccount(
+            user_id=user.id, 
+            points=150, 
+            level=LoyaltyLevel.GOLD
+        )
+        session.add(loyalty_account)
 
-    user.loyalty.level = LoyaltyLevel.GOLD
-    session.add(user)
     await session.commit()
-    await session.refresh(user)
+    await session.refresh(user, ["loyalty"])
 
     reservation_data = ReservationCreate(
         court_number=court.number,

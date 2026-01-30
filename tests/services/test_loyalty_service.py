@@ -31,16 +31,11 @@ async def test_loyalty_level_upgrades(
 async def test_get_loyalty_info_existing_user(session, sample_user):
     service = LoyaltyService(session)
 
-    statement = select(User).where(User.id == sample_user.id)
-    result = await session.execute(statement)
+    user = await session.get(User, sample_user.id)
+    info = await service.get_loyalty_info(user)
 
-    user = result.scalars().first()
-    await session.refresh(user, ["loyalty"])
-
-    info = service.get_loyalty_info(user)
-
-    assert info["points"] == 0
-    assert info["level"] == LoyaltyLevel.BEGINNER
+    assert info.points == 0
+    assert info.level == LoyaltyLevel.BEGINNER
 
 
 @pytest.mark.asyncio
@@ -48,13 +43,12 @@ async def test_change_loyalty_points(session, sample_user):
     service = LoyaltyService(session)
     user_id = sample_user.id
 
-    updated_account = await service.change_loyalty_points(sample_user, 20)
+    updated_account = await service.change_loyalty_points(sample_user.id, 20)
 
     assert updated_account.points == 20
 
     statement = select(User).where(User.id == user_id)
     result = await session.execute(statement)
-
     loaded_user = result.scalars().first()
     await session.refresh(loaded_user, ["loyalty"])
 
@@ -66,7 +60,7 @@ async def test_change_loyalty_points_level_up(session, sample_user):
     service = LoyaltyService(session)
     user_id = sample_user.id
 
-    updated_account = await service.change_loyalty_points(sample_user, 60)
+    updated_account = await service.change_loyalty_points(sample_user.id, 60)
 
     assert updated_account.points == 60
     assert updated_account.level == LoyaltyLevel.SILVER
@@ -94,4 +88,4 @@ async def test_change_loyalty_account_not_found(session):
     await session.refresh(user)
 
     with pytest.raises(LoyaltyAccountNotFoundError):
-        await service.change_loyalty_points(user, 10)
+        await service.change_loyalty_points(user.id, 10)

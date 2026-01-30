@@ -32,7 +32,7 @@ async def test_calculate_price_gold_with_extras(session, sample_user, sample_cou
 
     stmt = (
         select(User)
-        .options(selectinload(User.loyalty)) # type: ignore
+        .options(selectinload(User.loyalty))  # type: ignore
         .where(User.id == sample_user.id)
     )
     result = await session.execute(stmt)

@@ -19,14 +19,6 @@ async def create_service(
     current_coach: User = Depends(require_coach),
     service: CoachService = Depends(get_coach_service),
 ):
-    """Create a new coaching service.
-    Args:
-        service_input: Service creation data.
-        current_coach: The authenticated coach user.
-        service: CoachService instance.
-    Returns:
-        ServiceRead: The newly created service.
-    """
     return await service.create_new_service(current_coach, service_input)
 
 
@@ -35,13 +27,6 @@ async def get_coach_reservations(
     current_coach: User = Depends(require_coach),
     service: CoachService = Depends(get_coach_service),
 ):
-    """Get all reservations for the coach's services.
-    Args:
-        current_coach: The authenticated coach user.
-        service: CoachService instance.
-    Returns:
-        list[ReservationRead]: All reservations for coach's services.
-    """
     return await service.get_reservations_for_coach(current_coach)
 
 
@@ -49,12 +34,6 @@ async def get_coach_reservations(
 async def get_coach_services(
     current_coach: User = Depends(require_coach),
 ):
-    """Get all services provided by the coach.
-    Args:
-        current_coach: The authenticated coach user.
-    Returns:
-        list[ServiceRead]: All services for this coach.
-    """
     return CoachService.get_services_by_coach(current_coach)
 
 
@@ -64,14 +43,6 @@ async def get_available_services(
     category: ServiceCategory | None = Query(None, description="Search by category"),
     service: CoachService = Depends(get_coach_service),
 ):
-    """Search available coaching services.
-    Args:
-        name: Filter by service name (substring match).
-        category: Filter by service category.
-        service: CoachService instance.
-    Returns:
-        list[ServiceRead]: Available services matching filters.
-    """
     return await service.select_available_services(name, category)
 
 
@@ -81,12 +52,4 @@ async def delete_service(
     current_user: User = Depends(require_coach),
     service: CoachService = Depends(get_coach_service),
 ):
-    """Delete a coaching service.
-    Args:
-        service_id: ID of the service to delete.
-        current_user: The authenticated coach user.
-        service: CoachService instance.
-    Returns:
-        dict: Success message.
-    """
     return await service.remove_service(service_id, current_user)

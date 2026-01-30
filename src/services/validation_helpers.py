@@ -1,4 +1,5 @@
 """Helper methods for validating reservations."""
+
 from datetime import datetime, timedelta, timezone
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlmodel import select
@@ -26,12 +27,8 @@ LIGHTING_START_HOUR = 19
 
 class ValidationHelpers:
     """Helper class for validating reservations and services."""
-    
+
     def __init__(self, session: AsyncSession):
-        """Initialize ValidationHelpers with database session.
-        Args:
-            session: Async SQLAlchemy database session.
-        """
         self.session = session
 
     async def validate_court_availability(
@@ -41,16 +38,8 @@ class ValidationHelpers:
         end_time: datetime,
         exclude_reservation_id: int | None = None,
     ) -> None:
-        """Check that court is not already booked during requested time.
-        Args:
-            court_number: The court to check.
-            start_time: Reservation start time.
-            end_time: Reservation end time.
-            exclude_reservation_id: Reservation ID to exclude from check (for updates).
-        Raises:
-            StartTimeError: If start time is in the past.
-            DoubleCourtBookingError: If court is already booked.
-        """
+        """Check that court is not already booked during requested time."""
+
         if start_time < datetime.now(timezone.utc):
             raise StartTimeError()
         statement = select(Reservation).where(
@@ -75,14 +64,8 @@ class ValidationHelpers:
         start_time: datetime,
         end_time: datetime,
     ) -> None:
-        """Check that coach is not already booked during requested time.
-        Args:
-            coach_id: The coach to check (None skips validation).
-            start_time: Service start time.
-            end_time: Service end time.
-        Raises:
-            DoubleCoachBookingError: If coach is already booked.
-        """
+        """Check that coach is not already booked during requested time."""
+
         if coach_id is None:
             return
         statement = (
@@ -106,15 +89,7 @@ class ValidationHelpers:
     def validate_lighting_requirements(
         self, court: Court, start_time: datetime, wants_lighting: bool
     ) -> None:
-        """Validate that court supports lighting and time is appropriate.
-        Args:
-            court: The court for the reservation.
-            start_time: Reservation start time.
-            wants_lighting: Whether lighting is requested.
-        Raises:
-            LightingAvailabilityError: If court doesn't have lighting.
-            LightingTimeError: If lighting is requested before allowed hour.
-        """
+        """Validate that court supports lighting and time is appropriate."""
         if not wants_lighting:
             return
 
@@ -130,17 +105,8 @@ class ValidationHelpers:
         start_time: datetime,
         end_time: datetime,
     ) -> Service | None:
-        """Validate that service exists and coach (if required) is available.
-        Args:
-            service_id: ID of the service (None skips validation).
-            start_time: Service start time.
-            end_time: Service end time.
-        Returns:
-            Service | None: The service if valid, None if not requested.
-        Raises:
-            ServiceNotFoundError: If service doesn't exist.
-            DoubleCoachBookingError: If coach is already booked.
-        """
+        """Validate that service exists and coach (if required) is available."""
+
         if not service_id:
             return None
         service = await self.session.get(Service, service_id)
@@ -157,22 +123,12 @@ class ValidationHelpers:
     def calculate_end_time(
         self, start_time: datetime, duration_minutes: int
     ) -> datetime:
-        """Calculate reservation end time from start time and duration.
-        Args:
-            start_time: The start time.
-            duration_minutes: Duration in minutes.
-        Returns:
-            datetime: The calculated end time.
-        """
+        """Calculate reservation end time from start time and duration."""
         end_time = start_time + timedelta(minutes=duration_minutes)
         return end_time
 
     async def update_user_loyalty(self, user: User, duration_minutes: int) -> None:
-        """Award loyalty points for a completed reservation.
-        Args:
-            user: The user making the reservation.
-            duration_minutes: Reservation duration in minutes.
-        """
+        """Award loyalty points for a completed reservation."""
 
         statement = select(LoyaltyAccount).where(LoyaltyAccount.user_id == user.id)
         result = await self.session.execute(statement)

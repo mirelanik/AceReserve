@@ -18,20 +18,10 @@ class CourtService:
     """
 
     def __init__(self, session: AsyncSession):
-        """Initialize CourtService with database session.
-        Args:
-            session: Async SQLAlchemy database session.
-        """
         self.session = session
 
     async def create_court(self, court_input: CourtCreate, current_user: User) -> Court:
-        """Create a new court (admin only).
-        Args:
-            court_input: Court creation data.
-            current_user: The admin user making the request.
-        Returns:
-            Court: The newly created court.
-        """
+        """Create a new court (admin only)."""
         result = await self.session.execute(
             select(Court).where(Court.number == court_input.number)
         )
@@ -49,13 +39,7 @@ class CourtService:
         return new_court
 
     async def remove_court(self, court_number: int, current_user: User) -> dict:
-        """Delete a court (admin only).
-        Args:
-            court_number: The court number to delete.
-            current_user: The admin user making the request.
-        Returns:
-            dict: Success message.
-        """
+        """Delete a court (admin only)."""
         court = await self.session.get(Court, court_number)
         if not court:
             raise CourtNotFoundError()
@@ -65,20 +49,12 @@ class CourtService:
         return {"msg": f"Court number {court_number} deleted successfully"}
 
     async def show_all_courts(self) -> Sequence[Court]:
-        """Get all courts in the system.
-        Returns:
-            Sequence[Court]: All courts.
-        """
+        """Get all courts in the system."""
         result = await self.session.execute(select(Court))
         return result.scalars().all()
 
     async def show_court_by_number(self, court_number: int) -> Court:
-        """Get a court by its number.
-        Args:
-            court_number: The court number.
-        Returns:
-            Court: The court with the specified number.
-        """
+        """Get a court by its number."""
         result = await self.session.execute(
             select(Court).where(Court.number == court_number)
         )
@@ -95,15 +71,8 @@ class CourtService:
         start_datetime: datetime | None = None,
         duration: int = 60,
     ) -> Sequence[Court]:
-        """Get courts filtered by surface, lighting, and availability.
-        Args:
-            surface: Filter by surface type (optional).
-            lighting: Filter by lighting availability (optional).
-            start_datetime: Check availability from this time (optional).
-            duration: Duration in minutes for availability check (default 60).
-        Returns:
-            Sequence[Court]: Filtered and available courts.
-        """
+        """Get courts filtered by surface, lighting, and availability."""
+
         statement = select(Court).where(Court.available == True)
 
         if surface:

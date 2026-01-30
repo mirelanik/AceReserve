@@ -18,17 +18,6 @@ async def create_reservation(
     current_user: User = Depends(require_user),
     service: ReservationService = Depends(get_reservation_service),
 ):
-    """Create a new court reservation.
-    Validates court/coach availability, calculates price with discounts,
-    and awards loyalty points.
-
-    Args:
-        reservation_input: Reservation creation data.
-        current_user: The authenticated user making the reservation.
-        service: ReservationService instance.
-    Returns:
-        ReservationRead: The created reservation.
-    """
     return await service.process_reservation_creation(current_user, reservation_input)
 
 
@@ -37,13 +26,6 @@ async def show_my_reservations(
     current_user: User = Depends(require_user),
     service: ReservationService = Depends(get_reservation_service),
 ):
-    """Get all reservations for the current user.
-    Args:
-        current_user: The authenticated user.
-        service: ReservationService instance.
-    Returns:
-        list[ReservationRead]: All user's reservations.
-    """
     return await service.get_user_reservations(current_user)
 
 
@@ -53,14 +35,6 @@ async def cancel_reservation(
     current_user: User = Depends(require_user),
     service: ReservationService = Depends(get_reservation_service),
 ):
-    """Cancel a reservation.
-    Args:
-        reservation_id: ID of the reservation to cancel.
-        current_user: The authenticated user (must own the reservation or be admin).
-        service: ReservationService instance.
-    Returns:
-        dict: Success message.
-    """
     return await service.delete_reservation(current_user, reservation_id)
 
 
@@ -71,16 +45,4 @@ async def edit_reservation(
     current_user=Depends(require_user),
     service: ReservationService = Depends(get_reservation_service),
 ):
-    """Update a reservation's details.
-    Can modify court, date/time, duration, and extras. Revalidates availability
-    and recalculates price if needed.
-
-    Args:
-        reservation_id: ID of the reservation to update.
-        update_data: Updated reservation fields.
-        current_user: The authenticated user (must own the reservation or be admin).
-        service: ReservationService instance.
-    Returns:
-        ReservationRead: The updated reservation.
-    """
     return await service.modify_reservation(current_user, reservation_id, update_data)

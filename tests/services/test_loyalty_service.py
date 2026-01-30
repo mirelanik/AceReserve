@@ -33,7 +33,7 @@ async def test_get_loyalty_info_existing_user(session, sample_user):
 
     statement = select(User).where(User.id == sample_user.id)
     result = await session.execute(statement)
-    
+
     user = result.scalars().first()
     await session.refresh(user, ["loyalty"])
 
@@ -54,10 +54,10 @@ async def test_change_loyalty_points(session, sample_user):
 
     statement = select(User).where(User.id == user_id)
     result = await session.execute(statement)
-    
+
     loaded_user = result.scalars().first()
     await session.refresh(loaded_user, ["loyalty"])
-    
+
     assert loaded_user.loyalty.points == 20
 
 
@@ -73,10 +73,10 @@ async def test_change_loyalty_points_level_up(session, sample_user):
 
     statement = select(User).where(User.id == user_id)
     result = await session.execute(statement)
-    
+
     loaded_user = result.scalars().first()
     await session.refresh(loaded_user, ["loyalty"])
-    
+
     assert loaded_user.loyalty.level == LoyaltyLevel.SILVER
 
 

@@ -19,13 +19,6 @@ router = APIRouter(prefix="/users", tags=["Users"])
 async def register_user(
     user_input: UserCreate, service: UserService = Depends(get_user_service)
 ):
-    """Register a new user with email and password.
-    Args:
-        user_input: User registration data.
-        service: UserService instance.
-    Returns:
-        UserRead: The newly registered user information.
-    """
     return await service.create_user(user_input)
 
 
@@ -34,13 +27,6 @@ async def login(
     form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
     service: UserService = Depends(get_user_service),
 ):
-    """Authenticate user and get JWT access token.
-    Args:
-        form_data: OAuth2 form with username (email) and password.
-        service: UserService instance.
-    Returns:
-        dict: Contains 'access_token' and 'token_type'.
-    """
     user_authenticated = await service.authenticate_user(
         email=form_data.username, password=form_data.password
     )
@@ -55,12 +41,6 @@ async def login(
 
 @router.get("/me", response_model=UserRead, status_code=200)
 async def show_current_user(current_user: UserRead = Depends(require_user)):
-    """Get the current authenticated user's information.
-    Args:
-        current_user: The authenticated user (injected from token).
-    Returns:
-        UserRead: The current user's information.
-    """
     return current_user
 
 
@@ -71,15 +51,6 @@ async def add_user_by_admin(
     current_user: User = Depends(require_admin),
     service: UserService = Depends(get_user_service),
 ):
-    """Create a new user with a specific role (admin only).
-    Args:
-        user_input: User creation data.
-        role: Role to assign to the user.
-        current_user: The authenticated admin user.
-        service: UserService instance.
-    Returns:
-        UserRead: The newly created user.
-    """
     return await service.create_user_by_admin(user_input, role, current_user)
 
 
@@ -89,12 +60,4 @@ async def delete_user(
     current_user: User = Depends(require_admin),
     service: UserService = Depends(get_user_service),
 ):
-    """Delete a user and cancel their reservations (admin only).
-    Args:
-        user_id: ID of the user to delete.
-        current_user: The authenticated admin user.
-        service: UserService instance.
-    Returns:
-        dict: Success message.
-    """
     return await service.remove_user_by_admin(user_id)

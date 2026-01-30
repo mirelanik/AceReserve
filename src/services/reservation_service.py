@@ -31,10 +31,6 @@ class ReservationService:
     """
 
     def __init__(self, session: AsyncSession):
-        """Initialize ReservationService with database session.
-        Args:
-            session: Async SQLAlchemy database session.
-        """
         self.session = session
         self.validator = ValidationHelpers(session)
 
@@ -44,12 +40,6 @@ class ReservationService:
         """Create a new court reservation with full validation.
         Validates court and coach availability, checks lighting requirements,
         calculates price with loyalty discounts, and awards loyalty points.
-
-        Args:
-            user: The user making the reservation.
-            data: Reservation creation data.
-        Returns:
-            Reservation: The newly created confirmed reservation.
         """
         end_time = self.validator.calculate_end_time(
             data.start_time, data.duration_minutes
@@ -100,24 +90,15 @@ class ReservationService:
         return reservation
 
     async def get_user_reservations(self, user: User) -> Sequence[Reservation]:
-        """Get all reservations for a specific user.
-        Args:
-            user: The user to get reservations for.
-        Returns:
-            Sequence[Reservation]: All reservations belonging to the user.
-        """
+        """Get all reservations for a specific user."""
+
         reservations = select(Reservation).where(Reservation.user_id == user.id)
         result = await self.session.execute(reservations)
         return result.scalars().all()
 
     async def delete_reservation(self, user: User, reservation_id: int) -> dict:
-        """Cancel a reservation.
-        Args:
-            user: The user requesting cancellation.
-            reservation_id: ID of the reservation to cancel.
-        Returns:
-            dict: Success message.
-        """
+        """Cancel a reservation."""
+
         reservation = await self.session.get(Reservation, reservation_id)
         if not reservation:
             raise ReservationNotFoundError()
@@ -139,15 +120,8 @@ class ReservationService:
         update_data: ReservationUpdate,
     ) -> Reservation:
         """Update reservation details (date, time, court, extras).
-        Revalidates availability if court or time changed, recalculates price.
+        Revalidates availability if court or time changed, recalculates price."""
 
-        Args:
-            user: The user requesting the modification.
-            reservation_id: ID of the reservation to modify.
-            update_data: New values for reservation fields.
-        Returns:
-            Reservation: The updated reservation.
-        """
         reservation = await self.session.get(Reservation, reservation_id)
         if not reservation:
             raise ReservationNotFoundError()

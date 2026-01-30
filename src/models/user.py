@@ -17,7 +17,6 @@ if TYPE_CHECKING:
 
 
 class UserCourtFavorite(SQLModel, table=True):
-    """Join table for user favorite courts relationship."""
 
     __tablename__ = "user_court_favorites"  # type: ignore
     user_id: int = Field(foreign_key="users.id", primary_key=True)
@@ -25,7 +24,6 @@ class UserCourtFavorite(SQLModel, table=True):
 
 
 class UserCoachFavorite(SQLModel, table=True):
-    """Join table for user favorite coaches relationship."""
 
     __tablename__ = "user_coach_favorites"  # type: ignore
     user_id: int = Field(foreign_key="users.id", primary_key=True)
@@ -33,8 +31,6 @@ class UserCoachFavorite(SQLModel, table=True):
 
 
 class Role(str, Enum):
-    """User role enumeration for role-based access control."""
-
     GUEST = "guest"
     USER = "user"
     COACH = "coach"
@@ -42,14 +38,11 @@ class Role(str, Enum):
 
 
 class UserBase(SQLModel):
-    """Base user data shared between models."""
-
     full_name: str
     email: str = Field(index=True, unique=True)
 
 
 class User(UserBase, table=True):
-    """User database model with relationships to loyalty, reservations, and reviews."""
 
     __tablename__ = "users"  # type: ignore
     id: int = Field(default=None, primary_key=True)
@@ -94,26 +87,20 @@ class User(UserBase, table=True):
 
     @property
     def loyalty_points(self) -> int:
-        """Get user's current loyalty points."""
         return self.loyalty.points if self.loyalty else 0
 
     @property
     def loyalty_level(self) -> Optional["LoyaltyLevel"]:
-        """Get user's loyalty level."""
         return self.loyalty.level if self.loyalty else None
 
 
 class UserCreate(UserBase):
-    """Schema for user registration and creation."""
-
     email: str
     password: str
     full_name: str
 
 
 class UserRead(UserBase):
-    """Schema for reading user information."""
-
     id: int
     role: Role
     loyalty_points: int

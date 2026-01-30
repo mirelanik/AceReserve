@@ -14,14 +14,8 @@ from ..auth.hashing import get_password_hash
 
 
 class DatabaseService:
-    """Async database manager using SQLModel/SQLAlchemy async engine.
-
-    Manages database connections, session creation, and initialization.
-    """
-
     def __init__(self, database_url: str | None = None):
         """Initialize async database service.
-
         Args:
             database_url: SQLAlchemy async database URL. If None, uses config settings.
         """
@@ -34,7 +28,6 @@ class DatabaseService:
     @staticmethod
     def _get_database_url() -> str:
         """Get database URL from settings, ensuring async driver.
-
         Returns:
             str: Async database URL.
         """
@@ -45,7 +38,6 @@ class DatabaseService:
 
     async def get_session(self) -> AsyncGenerator[AsyncSession, None]:
         """Get an async database session for dependency injection.
-
         Yields:
             AsyncSession: Database session.
         """

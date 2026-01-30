@@ -12,8 +12,6 @@ if TYPE_CHECKING:
 
 
 class LoyaltyLevel(str, Enum):
-    """Loyalty tier level enumeration."""
-
     BEGINNER = "beginner"
     SILVER = "silver"
     GOLD = "gold"
@@ -21,15 +19,11 @@ class LoyaltyLevel(str, Enum):
 
 
 class LoyaltyAccountBase(SQLModel):
-    """Base loyalty account data shared between models."""
-
     points: int = Field(default=0, ge=0)
     level: LoyaltyLevel = Field(default=LoyaltyLevel.BEGINNER)
 
 
 class LoyaltyAccount(LoyaltyAccountBase, table=True):
-    """Loyalty account database model."""
-
     __tablename__ = "loyalty_accounts"  # type: ignore
     id: int | None = Field(default=None, primary_key=True)
     user_id: int = Field(foreign_key="users.id", unique=True)
@@ -48,14 +42,10 @@ class LoyaltyAccount(LoyaltyAccountBase, table=True):
 
 
 class LoyaltyAccountRead(LoyaltyAccountBase):
-    """Schema for reading loyalty account information."""
-
     pass
 
 
 class LoyaltyAdjust(SQLModel):
-    """Schema for adjusting loyalty points (admin only)."""
-
     user_id: int
     points_change: int
     reason: str | None = None

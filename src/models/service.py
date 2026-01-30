@@ -13,15 +13,11 @@ if TYPE_CHECKING:
 
 
 class ServiceCategory(str, Enum):
-    """Service category enumeration."""
-
     INDIVIDUAL = "individual"
     GROUP = "group"
 
 
 class ServiceBase(SQLModel):
-    """Base service data shared between models."""
-
     name: str = Field(index=True)
     price: Decimal = Field(gt=0)
     duration_minutes: int = Field(gt=0)
@@ -31,8 +27,6 @@ class ServiceBase(SQLModel):
 
 
 class Service(ServiceBase, table=True):
-    """Service database model with relationships to coaches and reviews."""
-
     __tablename__ = "services"  # type: ignore
     id: int | None = Field(default=None, primary_key=True)
 
@@ -46,18 +40,13 @@ class Service(ServiceBase, table=True):
 
     @property
     def coach_name(self) -> str:
-        """Get the name of the coach providing this service."""
         return self.coach.full_name
 
 
 class ServiceCreate(ServiceBase):
-    """Schema for creating a new service."""
-
     coach_id: int | None = None
 
 
 class ServiceRead(ServiceBase):
-    """Schema for reading service information."""
-
     id: int
     coach_name: str

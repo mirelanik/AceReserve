@@ -43,7 +43,7 @@ async def test_create_service_by_admin(
     service_logic = CoachService(session)
     merged_admin = await session.merge(sample_admin)
     merged_coach = await session.merge(sample_coach)
-    
+
     sample_service_data.coach_id = merged_coach.id
     service = await service_logic.create_new_service(merged_admin, sample_service_data)
 
@@ -52,9 +52,7 @@ async def test_create_service_by_admin(
 
 
 @pytest.mark.asyncio
-async def test_create_service_invalid_coach(
-    session, sample_admin, sample_service_data
-):
+async def test_create_service_invalid_coach(session, sample_admin, sample_service_data):
     """Test admin trying to assign service to non-coach user."""
     service_logic = CoachService(session)
     merged_admin = await session.merge(sample_admin)
@@ -146,7 +144,9 @@ async def test_select_available_services_filter(session, sample_coach):
     session.add_all([s1, s2, s3])
     await session.commit()
 
-    results = await service_logic.select_available_services(name="Professional Training")
+    results = await service_logic.select_available_services(
+        name="Professional Training"
+    )
     assert len(results) == 1
     assert results[0].name == "Professional Training"
 

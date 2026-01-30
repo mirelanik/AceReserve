@@ -10,7 +10,7 @@ from ..core.exceptions import (
 
 
 class FavoritesService:
-    
+
     def __init__(self, session: AsyncSession):
         self.session = session
 

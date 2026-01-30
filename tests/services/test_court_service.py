@@ -96,7 +96,7 @@ async def test_show_court_by_number(session, sample_court):
     service = CourtService(session)
     merged_court = await session.merge(sample_court)
     court = await service.show_court_by_number(merged_court.number)
-    
+
     assert court.id == merged_court.id
 
 

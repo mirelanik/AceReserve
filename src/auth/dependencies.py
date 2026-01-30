@@ -37,7 +37,7 @@ class RoleChecker:
         if user_role_level < required_role_level:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
-                detail="You do not have the required privileges."
+                detail="You do not have the required privileges.",
             )
         return current_user
 

@@ -18,14 +18,6 @@ async def create_review(
     current_user: User = Depends(require_user),
     service: ReviewService = Depends(get_review_service),
 ):
-    """Create a new review for a court, service, or coach.
-    Args:
-        review_input: Review creation data.
-        current_user: The authenticated user writing the review.
-        service: ReviewService instance.
-    Returns:
-        ReviewRead: The created review.
-    """
     review = await service.add_review(current_user, review_input)
     review.user = current_user
     return review
@@ -36,13 +28,6 @@ async def get_court_reviews(
     court_number: int,
     service: ReviewService = Depends(get_review_service),
 ):
-    """Get all reviews for a specific court.
-    Args:
-        court_number: The court number.
-        service: ReviewService instance.
-    Returns:
-        list[ReviewRead]: All reviews for the court.
-    """
     return await service.show_court_reviews(court_number)
 
 
@@ -51,13 +36,6 @@ async def get_service_reviews(
     service_id: int,
     service: ReviewService = Depends(get_review_service),
 ):
-    """Get all reviews for a specific service.
-    Args:
-        service_id: The service ID.
-        service: ReviewService instance.
-    Returns:
-        list[ReviewRead]: All reviews for the service.
-    """
     return await service.show_service_reviews(service_id)
 
 
@@ -66,13 +44,6 @@ async def get_coach_reviews(
     coach_id: int,
     service: ReviewService = Depends(get_review_service),
 ):
-    """Get all reviews for a specific coach.
-    Args:
-        coach_id: The coach user ID.
-        service: ReviewService instance.
-    Returns:
-        list[ReviewRead]: All reviews for the coach.
-    """
     return await service.show_coach_reviews(coach_id)
 
 
@@ -83,15 +54,6 @@ async def get_average_rating(
     coach_id: int | None = None,
     service: ReviewService = Depends(get_review_service),
 ):
-    """Calculate average rating for a court, service, or coach.
-    Args:
-        court_number: Court to get average for (optional).
-        service_id: Service to get average for (optional).
-        coach_id: Coach to get average for (optional).
-        service: ReviewService instance.
-    Returns:
-        dict: Contains 'average_rating' key with float value.
-    """
     average = await service.calculate_average_rating(
         court_number=court_number,
         service_id=service_id,

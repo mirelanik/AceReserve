@@ -31,25 +31,14 @@ class PricingService:
     """
 
     def __init__(self, session: AsyncSession):
-        """Initialize PricingService with database session.
-
-        Args:
-            session: Async SQLAlchemy database session.
-        """
         self.session = session
 
     @staticmethod
     def calculate_price(court: Court, data: ReservationCreate, user: User) -> Decimal:
         """Calculate total reservation price with loyalty discounts.
         Computes base court rental cost, adds extras, applies loyalty discount,
-        and returns final price rounded to 2 decimal places.
-        Args:
-            court: The court being reserved.
-            data: Reservation details including extras.
-            user: The user making the reservation (for discount calculation).
-        Returns:
-            Decimal: The final price after all calculations and discounts.
-        """
+        and returns final price rounded to 2 decimal places."""
+
         hours = Decimal(data.duration_minutes) / Decimal(60)
         base_price = Decimal(str(court.price_per_hour)) * hours
 
@@ -77,11 +66,6 @@ class PricingService:
     @staticmethod
     def calculate_earned_points(duration_minutes: int) -> int:
         """Calculate loyalty points earned from a reservation.
-        Awards points based on hours reserved at a fixed rate per hour.
-        Args:
-            duration_minutes: Duration of the reservation in minutes.
-        Returns:
-            int: Loyalty points earned.
-        """
-        return int((duration_minutes / 60) * POINTS_PER_HOUR)
+        Awards points based on hours reserved at a fixed rate per hour."""
 
+        return int((duration_minutes / 60) * POINTS_PER_HOUR)

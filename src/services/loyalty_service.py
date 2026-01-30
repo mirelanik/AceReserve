@@ -15,21 +15,14 @@ class LoyaltyService:
     """
 
     def __init__(self, session: AsyncSession):
-        """Initialize LoyaltyService with database session.
-        Args:
-            session: Async SQLAlchemy database session.
-        """
         self.session = session
 
     @staticmethod
     def update_loyalty_level(account: LoyaltyAccount, points_change: int) -> None:
         """Update loyalty account with point change and recalculate tier.
         Updates the account balance and automatically determines the tier level
-        based on total points.
-        Args:
-            account: The loyalty account to update.
-            points_change: Points to add (positive) or subtract (negative).
-        """
+        based on total points."""
+
         account.points += points_change
         account.points = max(account.points, 0)
 
@@ -44,12 +37,6 @@ class LoyaltyService:
 
     @staticmethod
     def get_loyalty_info(user: User) -> dict:
-        """Get loyalty information for a user.
-        Args:
-            user: The user to get loyalty info for.
-        Returns:
-            dict: Contains 'points' and 'level' keys.
-        """
         if not user.loyalty:
             return {"points": 0, "level": LoyaltyLevel.BEGINNER}
         return {"points": user.loyalty.points, "level": user.loyalty.level}
@@ -57,13 +44,7 @@ class LoyaltyService:
     async def change_loyalty_points(
         self, user: User, adjustment: int
     ) -> LoyaltyAccount:
-        """Adjust a user's loyalty points (admin only).
-        Args:
-            user: The user whose loyalty to adjust.
-            adjustment: Points to add (positive) or subtract (negative).
-        Returns:
-            LoyaltyAccount: The updated loyalty account.
-        """
+        """Adjust a user's loyalty points (admin only)."""
         result = await self.session.execute(
             select(LoyaltyAccount).where(LoyaltyAccount.user_id == user.id)
         )

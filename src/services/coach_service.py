@@ -8,10 +8,7 @@ from sqlmodel import select, col
 from ..models.service import Service, ServiceCreate, ServiceCategory
 from ..models.user import User, Role
 from ..models.reservation import Reservation
-from ..core.exceptions import (
-    CoachNotFoundError,
-    ServiceNotFoundError
-)
+from ..core.exceptions import CoachNotFoundError, ServiceNotFoundError
 
 
 class CoachService:
@@ -20,23 +17,14 @@ class CoachService:
     """
 
     def __init__(self, session: AsyncSession):
-        """Initialize CoachService with database session.
-        Args:
-            session: Async SQLAlchemy database session.
-        """
+        """Initialize CoachService with database session."""
         self.session = session
 
     async def create_new_service(
         self, user: User, service_input: ServiceCreate
     ) -> Service:
         """Create a new coaching service.
-        Admin can create services for any coach, coaches create for themselves.
-        Args:
-            user: The coach or admin creating the service.
-            service_input: Service creation data.
-        Returns:
-            Service: The newly created service.
-        """
+        Admin can create services for any coach, coaches create for themselves."""
         target_coach = None
         target_coach_id = None
 
@@ -70,21 +58,9 @@ class CoachService:
 
     @staticmethod
     def get_services_by_coach(user: User) -> list[Service]:
-        """Get all services provided by a coach.
-        Args:
-            user: The coach user.
-        Returns:
-            list[Service]: All services for this coach.
-        """
         return user.services
 
     async def get_reservations_for_coach(self, user: User) -> Sequence[Reservation]:
-        """Get all reservations for a coach's services.
-        Args:
-            user: The coach user.
-        Returns:
-            Sequence[Reservation]: All reservations for coach's services.
-        """
         coach_services_ids = [s.id for s in user.services if s.id is not None]
 
         if not coach_services_ids:
@@ -98,19 +74,12 @@ class CoachService:
 
         return reservations
 
-
     async def select_available_services(
         self,
         name: str | None = None,
         category: ServiceCategory | None = None,
     ) -> Sequence[Service]:
-        """Get available coaching services, optionally filtered.
-        Args:
-            name: Filter by service name (substring match).
-            category: Filter by service category.
-        Returns:
-            Sequence[Service]: Available services matching filters.
-        """
+        """Select available services with optional filtering by name and category."""
         statement = select(Service).where(Service.is_available == True)
 
         if name:
@@ -123,15 +92,6 @@ class CoachService:
         return result.scalars().all()
 
     async def remove_service(self, service_id: int, current_user: User) -> dict:
-        """Delete a coaching service.
-        Args:
-            service_id: ID of the service to delete.
-            current_user: The user requesting deletion.
-        Returns:
-            dict: Success message.
-        Raises:
-            ServiceNotFoundError: If service doesn't exist.
-        """
         service = await self.session.get(Service, service_id)
         if not service:
             raise ServiceNotFoundError()

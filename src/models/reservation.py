@@ -17,8 +17,6 @@ if TYPE_CHECKING:
 
 
 class ReservationStatus(str, Enum):
-    """Reservation status enumeration."""
-
     PENDING = "Pending"
     CONFIRMED = "Confirmed"
     CANCELLED = "Cancelled"
@@ -26,8 +24,6 @@ class ReservationStatus(str, Enum):
 
 
 class ReservationBase(SQLModel):
-    """Base reservation data shared between models."""
-
     court_number: int = Field(foreign_key="courts.number")
     start_time: datetime
     duration_minutes: int = Field(default=60, ge=30)
@@ -39,8 +35,6 @@ class ReservationBase(SQLModel):
 
 
 class Reservation(ReservationBase, table=True):
-    """Reservation database model with relationships to users and courts."""
-
     __tablename__ = "reservations"  # type: ignore
     id: int | None = Field(default=None, primary_key=True)
     status: ReservationStatus = Field(default=ReservationStatus.PENDING)
@@ -63,7 +57,6 @@ class Reservation(ReservationBase, table=True):
 
 
 class ReservationCreate(ReservationBase):
-    """Schema for creating a new reservation."""
 
     @field_validator("duration_minutes")
     @classmethod
@@ -82,8 +75,6 @@ class ReservationCreate(ReservationBase):
 
 
 class ReservationRead(ReservationBase):
-    """Schema for reading reservation information."""
-
     id: int
     user_id: int
     status: ReservationStatus
@@ -94,8 +85,6 @@ class ReservationRead(ReservationBase):
 
 
 class ReservationUpdate(SQLModel):
-    """Schema for updating reservation details."""
-
     court_number: int | None = None
     start_time: datetime | None = None
     duration_minutes: int | None = None

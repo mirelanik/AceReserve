@@ -20,7 +20,7 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/users/login")
 def create_access_token(data: dict) -> str:
     """Create a JWT access token with expiration.
     Args:
-        data: Dictionary containing token claims (e.g., user ID).
+        data: Dictionary containing token claims (e.g. user ID).
     """
     to_encode = data.copy()
     expire = datetime.now() + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
@@ -35,11 +35,7 @@ async def get_current_user(
     token: str = Depends(oauth2_scheme),
     session: AsyncSession = Depends(get_async_session),
 ) -> User:
-    """Get the current authenticated user from JWT token.
-    Args:
-        token: JWT token.
-        session: Async database session.
-    """
+    """Get the current authenticated user from JWT token."""
     try:
         payload = jwt.decode(
             token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM]

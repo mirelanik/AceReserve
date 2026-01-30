@@ -12,7 +12,6 @@ if TYPE_CHECKING:
 
 
 class Surface(str, Enum):
-    """Court surface type enum."""
     HARD = "hard"
     CLAY = "clay"
     GRASS = "grass"
@@ -20,8 +19,6 @@ class Surface(str, Enum):
 
 
 class CourtBase(SQLModel):
-    """Base court data shared between models."""
-
     number: int = Field(unique=True, index=True)
     surface: Surface
     has_lighting: bool = Field(default=False)
@@ -29,8 +26,6 @@ class CourtBase(SQLModel):
 
 
 class Court(CourtBase, table=True):
-    """Court database model with relationships to reservations and reviews."""
-
     __tablename__ = "courts"  # type: ignore
     id: int | None = Field(default=None, primary_key=True)
 
@@ -48,12 +43,8 @@ class Court(CourtBase, table=True):
 
 
 class CourtCreate(CourtBase):
-    """Schema for creating a new court."""
-
     pass
 
 
 class CourtRead(CourtBase):
-    """Schema for reading court information."""
-
     pass

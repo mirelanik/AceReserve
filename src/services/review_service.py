@@ -24,20 +24,11 @@ class ReviewService:
     """
 
     def __init__(self, session: AsyncSession):
-        """Initialize ReviewService with database session.
-        Args:
-            session: Async SQLAlchemy database session.
-        """
         self.session = session
 
     async def add_review(self, author: User, review_input: ReviewCreate) -> Review:
-        """Create a new review for a court, service, or coach.
-        Args:
-            author: The user writing the review.
-            review_input: Review creation data.
-        Returns:
-            Review: The newly created review.
-        """
+        """Create a new review for a court, service, or coach."""
+
         if review_input.court_number and review_input.coach_id:
             raise MoreTargetTypesError()
 
@@ -80,36 +71,18 @@ class ReviewService:
         return review
 
     async def show_court_reviews(self, court_number: int) -> Sequence[Review]:
-        """Get all reviews for a specific court.
-        Args:
-            court_number: The court number.
-        Returns:
-            Sequence[Review]: All reviews for the court.
-        """
         result = await self.session.execute(
             select(Review).where(Review.court_number == court_number)
         )
         return result.scalars().all()
 
     async def show_service_reviews(self, service_id: int) -> Sequence[Review]:
-        """Get all reviews for a specific service.
-        Args:
-            service_id: The service ID.
-        Returns:
-            Sequence[Review]: All reviews for the service.
-        """
         result = await self.session.execute(
             select(Review).where(Review.service_id == service_id)
         )
         return result.scalars().all()
 
     async def show_coach_reviews(self, coach_id: int) -> Sequence[Review]:
-        """Get all reviews for a specific coach.
-        Args:
-            coach_id: The coach user ID.
-        Returns:
-            Sequence[Review]: All reviews for the coach.
-        """
         result = await self.session.execute(
             select(Review).where(Review.coach_id == coach_id)
         )
@@ -121,14 +94,7 @@ class ReviewService:
         service_id: int | None = None,
         coach_id: int | None = None,
     ) -> float:
-        """Calculate average rating for a court, service, or coach.
-        Args:
-            court_number: Court to get average for (optional).
-            service_id: Service to get average for (optional).
-            coach_id: Coach to get average for (optional).
-        Returns:
-            float: Average rating rounded to 1 decimal place, or 0.0 if no reviews.
-        """
+        """Calculate average rating for a court, service, or coach."""
         query = select(func.avg(Review.rating))
 
         if court_number:

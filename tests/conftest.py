@@ -55,22 +55,20 @@ async def client(test_db: DatabaseService):
 
 
 @pytest.fixture
-async def sample_user(test_db):
+async def sample_user(session):
     """Create a test user"""
-    async with test_db.async_session() as session:
-        user = User(
-            email="user@test.com",
-            hashed_password=get_password_hash("hashed_pwd"),
-            full_name="Test User",
-            role=Role.USER,
-        )
-        session.add(user)
-        await session.commit()
-        await session.refresh(user)
-
-        loyalty = LoyaltyAccount(user_id=user.id, points=0, level=LoyaltyLevel.BEGINNER)
-        session.add(loyalty)
-        await session.commit()
+    user = User(
+        email="user@test.com",
+        hashed_password=get_password_hash("hashed_pwd"),
+        full_name="Test User",
+        role=Role.USER,
+    )
+    session.add(user)
+    await session.commit()
+    await session.refresh(user)
+    loyalty = LoyaltyAccount(user_id=user.id, points=0, level=LoyaltyLevel.BEGINNER)
+    session.add(loyalty)
+    await session.commit()
 
     return user
 
@@ -86,7 +84,6 @@ async def sample_user_other(session):
     session.add(user)
     await session.commit()
     await session.refresh(user)
-
     loyalty = LoyaltyAccount(user_id=user.id, points=0, level=LoyaltyLevel.BEGINNER)
     session.add(loyalty)
     await session.commit()
@@ -95,15 +92,14 @@ async def sample_user_other(session):
 
 
 @pytest.fixture
-async def sample_coach(test_db):
+async def sample_coach(session):
     """Create a test coach user"""
-    async with test_db.async_session() as session:
-        coach = User(
-            email="coach@test.com",
-            full_name="Coach User",
-            hashed_password=get_password_hash("hashed_pwd"),
-            role=Role.COACH,
-        )
+    coach = User(
+        email="coach@test.com",
+        full_name="Coach User",
+        hashed_password=get_password_hash("hashed_pwd"),
+        role=Role.COACH,
+    )
     session.add(coach)
     await session.commit()
     await session.refresh(coach)
@@ -112,36 +108,34 @@ async def sample_coach(test_db):
 
 
 @pytest.fixture
-async def sample_admin(test_db):
+async def sample_admin(session):
     """Create a test admin user"""
-    async with test_db.async_session() as session:
-        admin = User(
-            email="admin@test.com",
-            hashed_password=get_password_hash("admin_pwd"),
-            full_name="Admin",
-            role=Role.ADMIN,
-        )
-        session.add(admin)
-        await session.commit()
-        await session.refresh(admin)
+    admin = User(
+        email="admin@test.com",
+        hashed_password=get_password_hash("admin_pwd"),
+        full_name="Admin",
+        role=Role.ADMIN,
+    )
+    session.add(admin)
+    await session.commit()
+    await session.refresh(admin)
 
     return admin
 
 
 @pytest.fixture
-async def sample_court(test_db):
+async def sample_court(session):
     """Create a test court"""
-    async with test_db.async_session() as session:
-        court = Court(
-            number=1,
-            surface=Surface.HARD,
-            price_per_hour=Decimal("25.00"),
-            has_lighting=True,
-            available=True,
-        )
-        session.add(court)
-        await session.commit()
-        await session.refresh(court)
+    court = Court(
+        number=1,
+        surface=Surface.HARD,
+        price_per_hour=Decimal("25.00"),
+        has_lighting=True,
+        available=True,
+    )
+    session.add(court)
+    await session.commit()
+    await session.refresh(court)
 
     return court
 
@@ -158,7 +152,6 @@ async def sample_service(session):
     await session.commit()
     await session.refresh(service)
     return service
-
 
 def get_auth_header(user_id: int):
     """Generate JWT auth header for testing"""

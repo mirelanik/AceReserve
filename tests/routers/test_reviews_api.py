@@ -181,4 +181,5 @@ async def test_api_get_average_rating_calculation(
 
     assert response.status_code == 200
     data = response.json()
-    assert data["average_rating"] == 4.0
+    
+    assert data["court_average"] == 4.0

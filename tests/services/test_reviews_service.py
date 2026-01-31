@@ -234,4 +234,7 @@ async def test_calculate_average_rating_court(
     avg_rating = await service.calculate_average_rating(
         court_number=merged_court.number
     )
-    assert avg_rating == 4.5
+    
+    assert isinstance(avg_rating, dict)
+    assert "court_average" in avg_rating
+    assert avg_rating["court_average"] == 4.5

@@ -109,6 +109,11 @@ class CoachNotFoundError(AceReserveException):
         super().__init__(status_code=404, detail=detail)
 
 
+class FavoriteNotFoundError(AceReserveException):
+    def __init__(self, detail: str = "Item not found in favorites."):
+        super().__init__(status_code=404, detail=detail)
+
+
 class NoTargetTypeError(AceReserveException):
     def __init__(self, detail: str = "Review must target at least one entity."):
         super().__init__(status_code=400, detail=detail)

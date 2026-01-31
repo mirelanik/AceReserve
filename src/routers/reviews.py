@@ -54,10 +54,8 @@ async def get_average_rating(
     coach_id: int | None = None,
     service: ReviewService = Depends(get_review_service),
 ):
-    average = await service.calculate_average_rating(
-        court_number=court_number,
-        service_id=service_id,
-        coach_id=coach_id,
+    result = await service.calculate_average_rating(
+        court_number=court_number, service_id=service_id, coach_id=coach_id
     )
 
-    return {"average_rating": average}
+    return result

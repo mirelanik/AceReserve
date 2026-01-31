@@ -5,6 +5,7 @@ Defines the Review entity for rating courts, services, and coaches.
 from enum import Enum
 from datetime import datetime
 from typing import TYPE_CHECKING, Optional
+from sqlalchemy import Column, ForeignKey
 from pydantic import model_validator
 from sqlmodel import SQLModel, Field, Relationship
 
@@ -29,7 +30,10 @@ class ReviewBase(SQLModel):
 class Review(ReviewBase, table=True):
     __tablename__ = "reviews"  # type: ignore
     id: int | None = Field(default=None, primary_key=True)
-    author_id: int = Field(foreign_key="users.id")
+    author_id: int | None = Field(
+        default=None,
+        sa_column=Column(ForeignKey("users.id", ondelete="SET NULL"), nullable=True),
+    )
     created_at: datetime = Field(default_factory=datetime.now)
 
     court_number: int | None = Field(default=None, foreign_key="courts.number")
@@ -42,7 +46,7 @@ class Review(ReviewBase, table=True):
     service: Optional["Service"] = Relationship(
         back_populates="reviews", sa_relationship_kwargs={"lazy": "selectin"}
     )
-    user: "User" = Relationship(
+    user: Optional["User"] = Relationship(
         back_populates="reviews_written",
         sa_relationship_kwargs={"foreign_keys": "Review.author_id", "lazy": "selectin"},
     )

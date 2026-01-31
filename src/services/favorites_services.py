@@ -5,6 +5,7 @@ from ..models.court import Court
 from ..core.exceptions import (
     CourtNotFoundError,
     FavoriteAlreadyExistsError,
+    FavoriteNotFoundError,
     CoachNotFoundError,
 )
 
@@ -36,11 +37,16 @@ class FavoritesService:
             select(Court).where(Court.number == court_number)
         )
         court = result.scalars().first()
-        if court and court in user.favorite_courts:
-            user.favorite_courts.remove(court)
-            self.session.add(user)
-            await self.session.commit()
-            await self.session.refresh(user)
+        if not court:
+            raise CourtNotFoundError()
+
+        if court not in user.favorite_courts:
+            raise FavoriteNotFoundError(detail=f"Court {court_number} is not in favorites.")
+
+        user.favorite_courts.remove(court)
+        self.session.add(user)
+        await self.session.commit()
+        await self.session.refresh(user)
         return {"message": f"Court {court_number} removed from favorites."}
 
     @staticmethod
@@ -66,11 +72,16 @@ class FavoritesService:
     async def remove_coach_from_favorites(self, user: User, coach_id: int) -> dict:
         coach = await self.session.get(User, coach_id)
         await self.session.refresh(user, ["favorite_coaches"])
-        if coach and coach in user.favorite_coaches:
-            user.favorite_coaches.remove(coach)
-            self.session.add(user)
-            await self.session.commit()
-            await self.session.refresh(user)
+        if not coach or coach.role != Role.COACH:
+            raise CoachNotFoundError()
+
+        if coach not in user.favorite_coaches:
+            raise FavoriteNotFoundError(detail=f"Coach {coach_id} is not in favorites.")
+
+        user.favorite_coaches.remove(coach)
+        self.session.add(user)
+        await self.session.commit()
+        await self.session.refresh(user)
         return {"message": f"Coach {coach_id} removed from favorites."}
 
     @staticmethod

@@ -93,19 +93,36 @@ class ReviewService:
         court_number: int | None = None,
         service_id: int | None = None,
         coach_id: int | None = None,
-    ) -> float:
-        """Calculate average rating for a court, service, or coach."""
-        query = select(func.avg(Review.rating))
+    ) -> dict:
+        """Calculate average rating(s) for court, service, coach, or overall.
+        Returns a dict with keys depending on parameters provided.
+       """
+        response: dict = {}
 
-        if court_number:
-            query = query.where(Review.court_number == court_number)
-        elif service_id:
-            query = query.where(Review.service_id == service_id)
-        elif coach_id:
-            query = query.where(Review.coach_id == coach_id)
-        else:
-            return 0.0
+        if court_number is not None:
+            court_query = select(func.avg(Review.rating)).where(
+                Review.court_number == court_number
+            )
+            court_result = await self.session.execute(court_query)
+            court_avg = court_result.scalar()
+            response["court_average"] = round(court_avg, 1) if court_avg is not None else None
 
-        result = await self.session.execute(query)
-        value = result.scalar_one_or_none()
-        return round(value, 1) if value else 0.0
+        if service_id is not None:
+            service_query = select(func.avg(Review.rating)).where(Review.service_id == service_id)
+            service_result = await self.session.execute(service_query)
+            service_avg = service_result.scalar()
+            response["service_average"] = round(service_avg, 1) if service_avg is not None else None
+
+        if coach_id is not None:
+            coach_query = select(func.avg(Review.rating)).where(Review.coach_id == coach_id)
+            coach_result = await self.session.execute(coach_query)
+            coach_avg = coach_result.scalar()
+            response["coach_average"] = round(coach_avg, 1) if coach_avg is not None else None
+
+        if not response:
+            query = select(func.avg(Review.rating))
+            result = await self.session.execute(query)
+            avg_value = result.scalar()
+            return {"average": round(avg_value, 1) if avg_value is not None else None}
+
+        return response

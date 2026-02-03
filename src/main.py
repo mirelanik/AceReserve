@@ -13,21 +13,22 @@ from .routers import users, courts, reservations, loyalty, coach, favorites, rev
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """Manage the application lifecycle.
+    """Manage the application lifecycle."""
 
-    Creates database tables on startup and performs cleanup on shutdown.
+    try:
+        await db.create_tables()
+        if os.getenv("PYTEST_CURRENT_TEST") is None:
+            await db.create_default_admin()
+    except Exception as e:
+        print(f"Warning: Database connection failed. Error: {e}")
 
-    Args:
-        app: The FastAPI application instance.
-    """
-
-    await db.create_tables()
-    if os.getenv("PYTEST_CURRENT_TEST") is None:
-        await db.create_default_admin()
     try:
         yield
     finally:
-        await db.close()
+        try:
+            await db.close()
+        except Exception:
+            pass
 
 
 app = FastAPI(lifespan=lifespan)

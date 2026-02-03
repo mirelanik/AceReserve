@@ -7,3 +7,4 @@ acereserve.db
 .coverage
 htmlcov/
 .pytest_cache
+*acereserve.egg-info/

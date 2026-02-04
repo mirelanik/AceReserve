@@ -3,35 +3,29 @@ name = "acereserve"
 version = "0.1.0"
 description = "Ace Reserve Court Booking System"
 readme = "README.md"
-requires-python = ">=3.11" 
+requires-python = ">=3.11"
 
 dependencies = [
     "fastapi",
-    "uvicorn[standard]", 
+    "uvicorn[standard]",
     "python-multipart",
     "sqlmodel",
-    "aiosqlite",         
+    "aiosqlite",
     "pydantic",
     "pydantic-settings",
     "python-dotenv",
-    "pyjwt",    
-    "pwdlib[argon2]",    
-]
+    "pyjwt",
+    "pwdlib[argon2]",
 
-[dependency-groups]
-dev = [
     "pytest>=8.0.0",
     "pytest-asyncio",
     "pytest-cov",
     "coverage",
-    "httpx",             
+    "httpx",
     "black",
     "pylint",
     "mypy",
 ]
-
-[tool.setuptools.packages.find]
-where = ["src"]
 
 [tool.coverage.run]
 source = ["src"]
@@ -43,5 +37,6 @@ omit = [
 
 [tool.pytest.ini_options]
 pythonpath = ["."]
-asyncio_mode = "auto"
 testpaths = ["tests"]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"

@@ -1,8 +1,7 @@
-import pytest
 from decimal import Decimal
 from datetime import datetime
+import pytest
 from sqlalchemy import select
-from sqlalchemy.orm import selectinload
 from src.models.reservation import ReservationCreate
 from src.models.user import User
 from src.services.pricing_service import PricingService
@@ -31,19 +30,17 @@ async def test_calculate_price_gold_with_extras(session, sample_user, sample_cou
     service = PricingService(session)
     user = await session.get(User, sample_user.id)
     court = await session.merge(sample_court)
-    
+
     statement = select(LoyaltyAccount).where(LoyaltyAccount.user_id == user.id)
     result = await session.execute(statement)
-    loyalty_account= result.scalars().first()
-    
+    loyalty_account = result.scalars().first()
+
     if loyalty_account:
         loyalty_account.level = LoyaltyLevel.GOLD
         session.add(loyalty_account)
     else:
         loyalty_account = LoyaltyAccount(
-            user_id=user.id, 
-            points=150, 
-            level=LoyaltyLevel.GOLD
+            user_id=user.id, points=150, level=LoyaltyLevel.GOLD
         )
         session.add(loyalty_account)
 

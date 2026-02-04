@@ -74,7 +74,7 @@ class DatabaseService:
                     result = await session.execute(select(User))
                     users = result.scalars().all()
                 except Exception:
-                    return 
+                    return
 
                 if not users:
                     admin_email = getattr(

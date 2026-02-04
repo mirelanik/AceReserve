@@ -1,13 +1,12 @@
-import pytest
 from decimal import Decimal
 from datetime import datetime, timedelta, timezone
+import pytest
 from sqlalchemy import select
 from src.models.reservation import (
     ReservationCreate,
     ReservationStatus,
     ReservationUpdate,
 )
-from src.models.user import User
 from src.models.loyalty import LoyaltyAccount, LoyaltyLevel
 from src.models.service import Service
 from src.services.reservation_service import ReservationService

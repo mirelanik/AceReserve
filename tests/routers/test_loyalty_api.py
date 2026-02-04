@@ -1,8 +1,8 @@
 import pytest
 from sqlalchemy import select
-from ..conftest import get_auth_header
 from src.models.user import User
 from src.models.loyalty import LoyaltyAccount, LoyaltyLevel
+from ..conftest import get_auth_header
 
 
 @pytest.mark.asyncio

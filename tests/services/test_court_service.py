@@ -1,9 +1,7 @@
-import pytest
 from decimal import Decimal
-from datetime import datetime, timedelta, timezone
+import pytest
 from src.services.court_service import CourtService
 from src.models.court import CourtCreate, Court, Surface
-from src.models.reservation import Reservation, ReservationStatus
 from src.core.exceptions import ExistingCourtError, CourtNotFoundError
 
 

@@ -1,10 +1,11 @@
-import pytest
 from datetime import datetime, timedelta, timezone
+import pytest
 from sqlmodel import col
 from sqlalchemy import select
 from src.services.user_service import UserService
 from src.models.user import User, UserCreate, Role
 from src.models.reservation import ReservationCreate, Reservation, ReservationStatus
+from src.models.loyalty import LoyaltyAccount
 from src.services.reservation_service import ReservationService
 from src.core.exceptions import ExistingUserError, UserNotFoundError
 
@@ -163,7 +164,6 @@ async def test_remove_user_cancels_reservations(session, sample_user, sample_cou
 @pytest.mark.asyncio
 async def test_loyalty_account_created_with_user(session):
     """Test that loyalty account is created when user is created."""
-    from src.models.loyalty import LoyaltyAccount
 
     service = UserService(session)
     user_input = UserCreate(

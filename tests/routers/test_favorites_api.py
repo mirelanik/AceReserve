@@ -1,7 +1,7 @@
 import pytest
-from ..conftest import get_auth_header
 from src.services.favorites_services import FavoritesService
 from src.models.user import Role, User
+from ..conftest import get_auth_header
 
 
 @pytest.mark.asyncio
@@ -135,7 +135,7 @@ async def test_api_add_coach_invalid_role(client, session, sample_user):
 
 
 @pytest.mark.asyncio
-async def test_api_list_favorite_coaches(client, session, sample_user, sample_coach):
+async def test_api_list_favorite_coaches(client, sample_user, sample_coach):
     user_id = sample_user.id
     coach_id = sample_coach.id
 

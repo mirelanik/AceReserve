@@ -1,7 +1,7 @@
 import pytest
 from src.models.user import User
-from ..conftest import get_auth_header
 from src.models.review import ReviewCreate, ReviewTargetType
+from ..conftest import get_auth_header
 
 
 @pytest.fixture
@@ -181,5 +181,5 @@ async def test_api_get_average_rating_calculation(
 
     assert response.status_code == 200
     data = response.json()
-    
+
     assert data["court_average"] == 4.0

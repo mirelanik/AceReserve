@@ -1,5 +1,5 @@
-import pytest
 from decimal import Decimal
+import pytest
 from httpx import AsyncClient, ASGITransport
 from src.main import app
 from src.core.async_database import DatabaseService, get_async_session
@@ -152,6 +152,7 @@ async def sample_service(session):
     await session.commit()
     await session.refresh(service)
     return service
+
 
 def get_auth_header(user_id: int):
     """Generate JWT auth header for testing"""

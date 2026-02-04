@@ -1,6 +1,6 @@
-import pytest
 from decimal import Decimal
 from datetime import datetime, timedelta, timezone
+import pytest
 from src.services.coach_service import CoachService
 from src.models.service import ServiceCreate, ServiceCategory, Service
 from src.models.reservation import Reservation, ReservationStatus

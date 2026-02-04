@@ -41,7 +41,9 @@ class FavoritesService:
             raise CourtNotFoundError()
 
         if court not in user.favorite_courts:
-            raise FavoriteNotFoundError(detail=f"Court {court_number} is not in favorites.")
+            raise FavoriteNotFoundError(
+                detail=f"Court {court_number} is not in favorites."
+            )
 
         user.favorite_courts.remove(court)
         self.session.add(user)

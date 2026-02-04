@@ -1,5 +1,5 @@
-import pytest
 from decimal import Decimal
+import pytest
 from src.services.favorites_services import FavoritesService
 from src.models.user import User, Role
 from src.models.court import Court, Surface

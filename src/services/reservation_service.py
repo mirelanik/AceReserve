@@ -22,8 +22,6 @@ from ..models.court import Court
 from .pricing_service import PricingService
 from .validation_helpers import ValidationHelpers
 
-LIGHTING_START_HOUR = 19
-
 
 class ReservationService:
     """Service for managing tennis court reservations.
@@ -43,6 +41,10 @@ class ReservationService:
         """
         end_time = self.validator.calculate_end_time(
             data.start_time, data.duration_minutes
+        )
+
+        await self.validator.validate_operating_hours(
+            start_time=data.start_time, end_time=end_time
         )
 
         court_result = await self.session.execute(
@@ -144,6 +146,11 @@ class ReservationService:
         court_changed = new_court_number != reservation.court_number
 
         if time_changed or court_changed:
+
+            await self.validator.validate_operating_hours(
+                start_time=new_start_time, end_time=new_end_time
+            )
+
             await self.validator.validate_court_availability(
                 new_court_number,
                 new_start_time,

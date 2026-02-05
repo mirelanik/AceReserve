@@ -1,6 +1,6 @@
 """Helper methods for validating reservations."""
 
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta, timezone, time
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlmodel import select
 from ..core.exceptions import (
@@ -10,6 +10,8 @@ from ..core.exceptions import (
     ServiceNotFoundError,
     LightingAvailabilityError,
     LightingTimeError,
+    ClubNotOpenError,
+    ClubClosedError,
 )
 from ..models.reservation import (
     Reservation,
@@ -23,6 +25,8 @@ from .loyalty_service import LoyaltyService
 from .pricing_service import PricingService
 
 LIGHTING_START_HOUR = 19
+CLUB_OPEN_TIME = time(8, 0)
+CLUB_CLOSE_TIME = time(22, 0)
 
 
 class ValidationHelpers:
@@ -141,3 +145,21 @@ class ValidationHelpers:
         LoyaltyService.update_loyalty_level(loyalty, points_earned)
         self.session.add(loyalty)
         await self.session.flush()
+
+    async def validate_operating_hours(
+        self, start_time: datetime, end_time: datetime
+    ) -> None:
+        start = start_time.time()
+        end = end_time.time()
+
+        if start < CLUB_OPEN_TIME:
+            raise ClubNotOpenError(f"Club opens at {CLUB_OPEN_TIME.strftime('%H:%M')}")
+
+        if start >= CLUB_CLOSE_TIME:
+            raise ClubClosedError(f"Club closes at {CLUB_CLOSE_TIME.strftime('%H:%M')}")
+
+        if end > CLUB_CLOSE_TIME and end != time(0, 0):
+            raise ClubClosedError(f"Club closes at {CLUB_CLOSE_TIME.strftime('%H:%M')}")
+
+        if start_time.date() != end_time.date():
+           raise ClubClosedError(detail="Overnight reservations not allowed")

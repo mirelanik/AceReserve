@@ -15,6 +15,8 @@ from src.core.exceptions import (
     LightingTimeError,
     ForbiddenActionError,
     StartTimeError,
+    ClubNotOpenError,
+    ClubClosedError
 )
 
 
@@ -271,3 +273,40 @@ async def test_reservation_with_racket_and_balls_rental(
 
     assert reservation.rent_racket is True
     assert reservation.rent_balls is True
+
+
+@pytest.mark.asyncio
+async def test_create_reservation_outside_hours(session, sample_user, sample_court):
+    service = ReservationService(session)
+    merged_court = await session.merge(sample_court)
+    base_time = datetime.now(timezone.utc)
+
+    early_start = base_time.replace(
+        hour=6, minute=0, second=0, microsecond=0
+    ) + timedelta(days=1)
+    
+    reservation_early = ReservationCreate(
+        court_number=merged_court.number,
+        start_time=early_start,
+    )
+
+    with pytest.raises(ClubNotOpenError) as excinfo:
+        await service.process_reservation_creation(sample_user, reservation_early)
+
+    assert excinfo.value.status_code == 400
+    assert "Club opens" in excinfo.value.detail
+
+    late_start = base_time.replace(
+        hour=23, minute=0, second=0, microsecond=0
+    ) + timedelta(days=1)
+
+    reservation_late = ReservationCreate(
+        court_number=merged_court.number,
+        start_time=late_start,
+    )
+
+    with pytest.raises(ClubClosedError) as excinfo:
+        await service.process_reservation_creation(sample_user, reservation_late)
+
+    assert excinfo.value.status_code == 400
+    assert "Club closes" in excinfo.value.detail

@@ -122,3 +122,11 @@ class NoTargetTypeError(AceReserveException):
 class MoreTargetTypesError(AceReserveException):
     def __init__(self, detail: str = "Review must target only one entity."):
         super().__init__(status_code=400, detail=detail)
+
+class ClubNotOpenError(AceReserveException):
+    def __init__(self, detail: str = "Club is not open at the specified time."):
+        super().__init__(status_code=400, detail=detail)
+
+class ClubClosedError(AceReserveException):
+    def __init__(self, detail: str = "Club is closeed at the specified time."):
+        super().__init__(status_code=400, detail=detail)

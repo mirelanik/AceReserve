@@ -78,10 +78,10 @@ class DatabaseService:
 
                 if not users:
                     admin_email = getattr(
-                        settings, "FIRST_ADMIN_EMAIL", "admin@example.com"
+                        settings, "FIRST_ADMIN_EMAIL",
                     )
                     admin_password = getattr(
-                        settings, "FIRST_ADMIN_PASSWORD", "changeme"
+                        settings, "FIRST_ADMIN_PASSWORD",
                     )
 
                     if not admin_password:

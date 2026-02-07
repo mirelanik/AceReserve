@@ -16,7 +16,7 @@ from src.core.exceptions import (
     ForbiddenActionError,
     StartTimeError,
     ClubNotOpenError,
-    ClubClosedError
+    ClubClosedError,
 )
 
 
@@ -26,7 +26,9 @@ async def test_prevent_court_double_booking(session, sample_user, sample_court):
     merged_user = await session.merge(sample_user)
     merged_court = await session.merge(sample_court)
 
-    start_time = datetime.now(timezone.utc) + timedelta(days=1)
+    start_time = datetime.now(timezone.utc).replace(hour=12, minute=0) + timedelta(
+        days=1
+    )
     data = ReservationCreate(
         court_number=merged_court.number, start_time=start_time, duration_minutes=60
     )
@@ -77,7 +79,9 @@ async def test_reservation_updates_loyalty_points(session, sample_user, sample_c
 
     initial_points = loyalty_account.points
 
-    start_time = datetime.now(timezone.utc) + timedelta(days=2)
+    start_time = datetime.now(timezone.utc).replace(hour=12, minute=0) + timedelta(
+        days=2
+    )
     data = ReservationCreate(
         court_number=merged_court.number,
         start_time=start_time,
@@ -102,7 +106,9 @@ async def test_get_user_reservations(
     merged_user_other = await session.merge(sample_user_other)
     merged_court = await session.merge(sample_court)
 
-    base_time = datetime.now(timezone.utc) + timedelta(days=1)
+    base_time = datetime.now(timezone.utc).replace(hour=12, minute=0) + timedelta(
+        days=1
+    )
 
     for i in range(2):
         await service.process_reservation_creation(
@@ -134,7 +140,9 @@ async def test_delete_reservation(session, sample_user, sample_court):
     merged_user = await session.merge(sample_user)
     merged_court = await session.merge(sample_court)
 
-    start_time = datetime.now(timezone.utc) + timedelta(days=1)
+    start_time = datetime.now(timezone.utc).replace(hour=12, minute=0) + timedelta(
+        days=1
+    )
     reservation_data = ReservationCreate(
         court_number=merged_court.number, start_time=start_time, duration_minutes=60
     )
@@ -158,7 +166,9 @@ async def test_delete_reservation_forbidden(
     merged_owner = await session.merge(sample_user_other)
     merged_court = await session.merge(sample_court)
 
-    start_time = datetime.now(timezone.utc) + timedelta(days=1)
+    start_time = datetime.now(timezone.utc).replace(hour=12, minute=0) + timedelta(
+        days=1
+    )
     reservation = await service.process_reservation_creation(
         merged_owner,
         ReservationCreate(
@@ -178,7 +188,9 @@ async def test_modify_reservation(session, sample_user, sample_court):
     merged_user = await session.merge(sample_user)
     merged_court = await session.merge(sample_court)
 
-    start_time = datetime.now(timezone.utc) + timedelta(days=2)
+    start_time = datetime.now(timezone.utc).replace(hour=14, minute=0) + timedelta(
+        days=2
+    )
     create_data = ReservationCreate(
         court_number=merged_court.number,
         start_time=start_time,
@@ -187,7 +199,9 @@ async def test_modify_reservation(session, sample_user, sample_court):
     reservation = await service.process_reservation_creation(merged_user, create_data)
     assert reservation.id is not None
 
-    new_start_time = datetime.now(timezone.utc) + timedelta(days=3)
+    new_start_time = datetime.now(timezone.utc).replace(hour=14, minute=0) + timedelta(
+        days=3
+    )
     modify_data = ReservationUpdate(
         start_time=new_start_time,
         duration_minutes=90,
@@ -211,7 +225,9 @@ async def test_prevent_past_reservation(session, sample_user, sample_court):
     merged_user = await session.merge(sample_user)
     merged_court = await session.merge(sample_court)
 
-    start_time = datetime.now(timezone.utc) - timedelta(days=1)
+    start_time = datetime.now(timezone.utc).replace(hour=14, minute=0) - timedelta(
+        days=1
+    )
     data = ReservationCreate(
         court_number=merged_court.number,
         start_time=start_time,
@@ -239,7 +255,9 @@ async def test_reservation_with_service(session, sample_user, sample_court):
     await session.commit()
     await session.refresh(service_obj)
 
-    start_time = datetime.now(timezone.utc) + timedelta(days=1)
+    start_time = datetime.now(timezone.utc).replace(hour=14, minute=0) + timedelta(
+        days=1
+    )
     data = ReservationCreate(
         court_number=merged_court.number,
         start_time=start_time,
@@ -261,7 +279,9 @@ async def test_reservation_with_racket_and_balls_rental(
     merged_user = await session.merge(sample_user)
     merged_court = await session.merge(sample_court)
 
-    start_time = datetime.now(timezone.utc) + timedelta(days=1)
+    start_time = datetime.now(timezone.utc).replace(hour=14, minute=0) + timedelta(
+        days=1
+    )
     data = ReservationCreate(
         court_number=merged_court.number,
         start_time=start_time,
@@ -282,10 +302,8 @@ async def test_create_reservation_outside_hours(session, sample_user, sample_cou
     merged_court = await session.merge(sample_court)
     base_time = datetime.now(timezone.utc)
 
-    early_start = base_time.replace(
-        hour=6, minute=0, second=0, microsecond=0
-    ) + timedelta(days=1)
-    
+    early_start = base_time.replace(hour=6, minute=0) + timedelta(days=1)
+
     reservation_early = ReservationCreate(
         court_number=merged_court.number,
         start_time=early_start,
@@ -297,9 +315,7 @@ async def test_create_reservation_outside_hours(session, sample_user, sample_cou
     assert excinfo.value.status_code == 400
     assert "Club opens" in excinfo.value.detail
 
-    late_start = base_time.replace(
-        hour=23, minute=0, second=0, microsecond=0
-    ) + timedelta(days=1)
+    late_start = base_time.replace(hour=23, minute=0) + timedelta(days=1)
 
     reservation_late = ReservationCreate(
         court_number=merged_court.number,

@@ -90,7 +90,7 @@ class CourtService:
             busy_courts_statement = select(Reservation.court_number).where(
                 Reservation.status != ReservationStatus.CANCELLED,
                 Reservation.start_time < end_datetime,
-                Reservation.end_time > start_datetime,
+                Reservation.end_time > start_datetime,  # type: ignore
             )
             busy_result = await self.session.execute(busy_courts_statement)
             busy_court_ids = busy_result.scalars().all()

@@ -12,9 +12,10 @@ from src.core.exceptions import (
 
 
 @pytest.fixture
-async def sample_service_data():
+async def sample_service_data(sample_court):
     return ServiceCreate(
         name="Advanced Tennis",
+        court_number=sample_court.number,
         price=Decimal("80.00"),
         duration_minutes=60,
         category=ServiceCategory.INDIVIDUAL,
@@ -114,12 +115,13 @@ async def test_get_reservations_for_coach(
 
 
 @pytest.mark.asyncio
-async def test_select_available_services_filter(session, sample_coach):
+async def test_select_available_services_filter(session, sample_coach, sample_court):
     """Test filtering services by name and availability."""
     service_logic = CoachService(session)
 
     s1 = Service(
         name="Professional Training",
+        court_number=sample_court.number,
         coach_id=sample_coach.id,
         price=Decimal("10.00"),
         duration_minutes=60,
@@ -127,6 +129,7 @@ async def test_select_available_services_filter(session, sample_coach):
     )
     s2 = Service(
         name="Children Lesson",
+        court_number=sample_court.number,
         coach_id=sample_coach.id,
         price=Decimal("10.00"),
         duration_minutes=60,
@@ -135,6 +138,7 @@ async def test_select_available_services_filter(session, sample_coach):
 
     s3 = Service(
         name="Individual training",
+        court_number=sample_court.number,
         coach_id=sample_coach.id,
         price=Decimal("10.00"),
         duration_minutes=60,

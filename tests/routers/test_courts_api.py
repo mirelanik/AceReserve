@@ -1,3 +1,4 @@
+from decimal import Decimal
 import pytest
 from src.models.court import Surface, Court
 from ..conftest import get_auth_header
@@ -75,7 +76,7 @@ async def test_api_search_courts_by_category(client, session, sample_court):
         number=99,
         surface=Surface.CLAY,
         has_lighting=False,
-        price_per_hour=20,
+        price_per_hour=Decimal("20.00"),
         available=True,
     )
     session.add(c2)

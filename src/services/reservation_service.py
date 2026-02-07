@@ -10,6 +10,7 @@ from ..core.exceptions import (
     CourtNotFoundError,
     ReservationNotFoundError,
     ForbiddenActionError,
+    ServiceNotFoundError,
 )
 from ..models.reservation import (
     Reservation,
@@ -19,6 +20,7 @@ from ..models.reservation import (
 )
 from ..models.user import User, Role
 from ..models.court import Court
+from ..models.service import Service
 from .pricing_service import PricingService
 from .validation_helpers import ValidationHelpers
 
@@ -54,16 +56,35 @@ class ReservationService:
         if not court:
             raise CourtNotFoundError()
 
-        await self.validator.validate_court_availability(
-            data.court_number, data.start_time, end_time
-        )
+        is_group_reservation = False
+
+        if data.service_id:
+            service = await self.session.get(Service, data.service_id)
+            if not service:
+                raise ServiceNotFoundError()
+
+            if service.max_group_capacity > 1:
+                is_group_reservation = True
+
+                await self.validator.validate_group_availability(
+                    court_number=data.court_number,
+                    start_time=data.start_time,
+                    end_time=end_time,
+                    service_id=data.service_id,
+                    max_capacity=service.max_group_capacity,
+                    user_id=user.id,
+                )
+
+        if not is_group_reservation:
+            await self.validator.validate_court_availability(
+                data.court_number, data.start_time, end_time
+            )
+            await self.validator.validate_service(
+                data.service_id, data.start_time, end_time
+            )
 
         self.validator.validate_lighting_requirements(
             court, data.start_time, data.wants_lighting
-        )
-
-        await self.validator.validate_service(
-            data.service_id, data.start_time, end_time
         )
 
         total_price = PricingService.calculate_price(court, data, user)

@@ -19,11 +19,13 @@ class ServiceCategory(str, Enum):
 
 class ServiceBase(SQLModel):
     name: str = Field(index=True)
+    court_number: int = Field(foreign_key="courts.number")
     price: Decimal = Field(gt=0)
     duration_minutes: int = Field(gt=0)
     is_available: bool = Field(default=True)
     category: ServiceCategory = Field(default=ServiceCategory.INDIVIDUAL)
     requires_coach: bool = False
+    max_group_capacity: int = Field(default=1, ge=1)
 
 
 class Service(ServiceBase, table=True):

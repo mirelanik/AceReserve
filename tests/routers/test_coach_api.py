@@ -1,11 +1,11 @@
 from datetime import datetime, timedelta
 from decimal import Decimal
 import pytest
-from sqlalchemy import select
+from src.models.court import Court
 from src.models.user import User
 from src.models.service import Service, ServiceCategory
 from src.models.reservation import Reservation, ReservationStatus
-from ..conftest import get_auth_header
+from ..conftest import get_auth_header, session
 
 
 @pytest.mark.asyncio
@@ -63,7 +63,6 @@ async def test_api_get_coach_reservations(
         court_number=1,
         start_time=datetime.now() + timedelta(days=1),
         end_time=datetime.now() + timedelta(days=1, hours=1),
-        price=Decimal("50.00"),
         status=ReservationStatus.CONFIRMED,
     )
     session.add(reservation)
@@ -79,17 +78,19 @@ async def test_api_get_coach_reservations(
 
 
 @pytest.mark.asyncio
-async def test_api_search_available_services(client, session, sample_coach):
+async def test_api_search_available_services(client, session, sample_coach, sample_court):
     """Test filtering services by name and category."""
     s1 = Service(
-        name="Unique Tennis Lesson",
+        name="Professional Tennis Lesson",
+        court_number=sample_court.number,
         price=Decimal("50"),
         duration_minutes=60,
         category=ServiceCategory.INDIVIDUAL,
         coach_id=sample_coach.id,
     )
     s2 = Service(
-        name="Cardio Session",
+        name="Group Session",
+        court_number=sample_court.number,
         price=Decimal("30"),
         duration_minutes=45,
         category=ServiceCategory.GROUP,
@@ -98,11 +99,11 @@ async def test_api_search_available_services(client, session, sample_coach):
     session.add_all([s1, s2])
     await session.commit()
 
-    response_name = await client.get("/coach/services/available?name=Unique")
+    response_name = await client.get("/coach/services/available?name=Professional")
     assert response_name.status_code == 200
     data_name = response_name.json()
     assert len(data_name) == 1
-    assert data_name[0]["name"] == "Unique Tennis Lesson"
+    assert data_name[0]["name"] == "Professional Tennis Lesson"
 
     response_cat = await client.get(
         f"/coach/services/available?category={ServiceCategory.GROUP.value}"
@@ -111,17 +112,19 @@ async def test_api_search_available_services(client, session, sample_coach):
     data_cat = response_cat.json()
     assert len(data_cat) >= 1
     assert data_cat[0]["category"] == ServiceCategory.GROUP.value
-    assert data_cat[0]["name"] == "Cardio Session"
+    assert data_cat[0]["name"] == "Group Session"
 
 
 @pytest.mark.asyncio
-async def test_api_delete_service(client, session, sample_coach):
+async def test_api_delete_service(client, session, sample_coach, sample_court):
     """Test deleting a service."""
     coach = await session.get(User, sample_coach.id)
+    court = await session.get(Court, sample_court.number)
     headers = get_auth_header(coach.id)
 
     service_to_delete = Service(
         name="To Be Deleted",
+        court_number=court.number,
         price=Decimal("10"),
         duration_minutes=30,
         category=ServiceCategory.INDIVIDUAL,
@@ -136,8 +139,8 @@ async def test_api_delete_service(client, session, sample_coach):
     response = await client.delete(f"/coach/services/{service_id}", headers=headers)
 
     assert response.status_code == 200
+    
+    session.expire_all()
+    service = await session.get(Service, service_id)
 
-    result = await session.execute(select(Service).where(Service.id == service_id))
-    deleted_service = result.scalars().first()
-
-    assert deleted_service is None
+    assert service is None

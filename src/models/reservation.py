@@ -13,7 +13,6 @@ from pydantic import field_validator
 if TYPE_CHECKING:
     from .user import User
     from .court import Court
-    from .service import Service
 
 
 class ReservationStatus(str, Enum):
@@ -39,7 +38,7 @@ class Reservation(ReservationBase, table=True):
     id: int | None = Field(default=None, primary_key=True)
     status: ReservationStatus = Field(default=ReservationStatus.PENDING)
     created_at: datetime = Field(default_factory=datetime.now)
-    end_time: datetime
+    end_time: datetime | None = Field(default=None)
     total_price: Decimal = Field(default=0.0)
     user_id: int = Field(foreign_key="users.id")
 

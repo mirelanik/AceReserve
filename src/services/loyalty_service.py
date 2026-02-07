@@ -35,7 +35,7 @@ class LoyaltyService:
         else:
             account.level = LoyaltyLevel.BEGINNER
 
-    async def get_loyalty_info(self, user: User) -> dict:
+    async def get_loyalty_info(self, user: User) -> LoyaltyAccount:
         result = await self.session.execute(
             select(LoyaltyAccount).where(LoyaltyAccount.user_id == user.id)
         )

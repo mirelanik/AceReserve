@@ -12,6 +12,7 @@ from ..core.exceptions import (
     LightingTimeError,
     ClubNotOpenError,
     ClubClosedError,
+    ForbiddenActionError,
 )
 from ..models.reservation import (
     Reservation,
@@ -50,7 +51,7 @@ class ValidationHelpers:
             Reservation.court_number == court_number,
             Reservation.status != ReservationStatus.CANCELLED,
             Reservation.start_time < end_time,
-            Reservation.end_time > start_time,
+            Reservation.end_time > start_time,  # type: ignore
         )
 
         if exclude_reservation_id is not None:
@@ -76,11 +77,10 @@ class ValidationHelpers:
             select(Reservation)
             .join(Service)
             .where(
-                Reservation.service_id == Service.id,
                 Service.coach_id == coach_id,
                 Reservation.status != ReservationStatus.CANCELLED,
-                Reservation.start_time < end_time,
-                Reservation.end_time > start_time,
+                Reservation.start_time < end_time,  # type: ignore
+                Reservation.end_time > start_time,  # type: ignore
             )
         )
 
@@ -162,4 +162,42 @@ class ValidationHelpers:
             raise ClubClosedError(f"Club closes at {CLUB_CLOSE_TIME.strftime('%H:%M')}")
 
         if start_time.date() != end_time.date():
-           raise ClubClosedError(detail="Overnight reservations not allowed")
+            raise ClubClosedError(detail="Overnight reservations not allowed")
+
+    async def validate_group_availability(
+        self,
+        court_number: int,
+        start_time: datetime,
+        end_time: datetime,
+        service_id: int | None,
+        max_capacity: int,
+        user_id: int,
+    ) -> None:
+        statement = select(Reservation).where(
+            Reservation.court_number == court_number,
+            Reservation.service_id == service_id,
+            Reservation.start_time >= start_time,
+            Reservation.end_time <= end_time,  # type: ignore
+            Reservation.status != ReservationStatus.CANCELLED,
+        )
+        result = await self.session.execute(statement)
+        overlapping_reservations = result.scalars().all()
+
+        current_participants = 0
+        for res in overlapping_reservations:
+            if res.service_id != service_id:
+                raise ForbiddenActionError(
+                    detail="Court is booked for another activity."
+                )
+
+            if res.user_id == user_id:
+                raise DoubleCourtBookingError(
+                    detail="You already have a reservation for this time slot."
+                )
+
+            current_participants += 1
+
+        if current_participants >= max_capacity:
+            raise ForbiddenActionError(
+                detail=f"Max group capacity reached: {max_capacity}"
+            )

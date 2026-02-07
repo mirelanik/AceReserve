@@ -231,6 +231,7 @@ async def test_reservation_with_service(session, sample_user, sample_court):
 
     service_obj = Service(
         name="Ball Rental",
+        court_number=merged_court.number,
         price=Decimal("10.00"),
         duration_minutes=60,
     )

@@ -145,8 +145,10 @@ async def sample_service(session):
     """Create a test service."""
     service = Service(
         name="Tennis Lessons",
+        court_number=1,
         price=Decimal("50.00"),
         duration_minutes=60,
+        max_group_capacity=1,
     )
     session.add(service)
     await session.commit()

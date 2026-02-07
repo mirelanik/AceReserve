@@ -25,42 +25,66 @@ The project is built using the following technologies:
 
 
 1.  **Reservation System:**
-    * Time slot validation (prevents double booking).
+    * Users can create, cancel and modify reservations.
+    * Time slot validation and double booking prevention.
     * Price calculation based on time and extras chosen (rackets, balls, court lighting).
 2.  **Court Management:** CRUD operations, availability checks, filtering by surface type and lighting.
-3.  **Coaches and Services:** Coaches can create services; clients can book sessions.
+3.  **Coaches and Services:** Coaches can create services; users can book sessions.
 4.  **Loyalty Program:** Automatic point accumulation and level upgrade (Beginner, Silver, Gold, Platinum).
 
 ---
 
-## 🚀 Installation and Setup
+## 🚀 Installation & Setup
 
-Follow the steps below to run the project locally.
+This project uses **[uv](https://docs.astral.sh/uv/)** for dependency management and virtual environments.
 
-### 1. Clone the Repository
+### 1. Prerequisites
+Ensure you have `uv` installed. If not:
 ```bash
+# macOS/Linux
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# Windows
+powershell -c "irm https://astral.sh/uv/install.ps1 | iex"
+```
+
+### 2. Clone and Sync
+
+```bash
+# Clone the repository
 git clone https://github.com/mirelanik/AceReserve.git
 cd AceReserve
+
+# Creates .venv and installs dependencies
+uv sync
 ```
 
-### 2. Create a Virtual Environment
+### 3. Environment Configuration
 
-**Windows (PowerShell):**
-```powershell
-python -m venv .venv
-.\.venv\Scripts\activate
-```
+Create a .env file in the root directory. You can start by copying the example:
 
-**macOS / Linux:**
 ```bash
-python3 -m venv .venv
+cp .env.example .env
+```
+
+**Required variables:**
+- `SECRET_KEY` - JWT secret key (generate a secure random string)
+- `DATABASE_URL` - Database connection string
+- `FIRST_ADMIN_EMAIL` - Initial admin email
+- `FIRST_ADMIN_PASSWORD` - Initial admin password
+
+### 4. Activating the Virtual Environment (Optional)
+
+If you need to activate the virtual environment manually:
+```bash
+# macOS/Linux
 source .venv/bin/activate
+
+# Windows
+.venv\Scripts\activate
 ```
 
-### 3. Install Dependencies
-```bash
-pip install -r requirements.txt
-```
+Note: When using `uv run`, activation is automatic.
 
 ---
 
@@ -68,12 +92,32 @@ pip install -r requirements.txt
 
 ### Backend (API Server)
 ```bash
-uvicorn src.main:app --reload
+# Default port (8000)
+uv run uvicorn src.main:app --reload
+
+# Custom port
+uv run uvicorn src.main:app --reload --port 8080
 ```
 
 Server is available at: http://127.0.0.1:8000
 
 Interactive documentation (Swagger UI): http://127.0.0.1:8000/docs
+
+---
+
+## 🧪 Running Tests
+
+To run the test suite with pytest:
+
+```bash
+uv run pytest
+```
+
+To run with coverage report:
+
+```bash
+uv run pytest --cov=src
+```
 
 ---
 

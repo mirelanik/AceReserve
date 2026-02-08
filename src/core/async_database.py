@@ -14,6 +14,8 @@ from ..auth.hashing import get_password_hash
 
 
 class DatabaseService:
+    """Asynchronous database service for managing connections and sessions."""
+
     def __init__(self, database_url: str | None = None):
         """Initialize async database service.
         Args:
@@ -78,10 +80,12 @@ class DatabaseService:
 
                 if not users:
                     admin_email = getattr(
-                        settings, "FIRST_ADMIN_EMAIL",
+                        settings,
+                        "FIRST_ADMIN_EMAIL",
                     )
                     admin_password = getattr(
-                        settings, "FIRST_ADMIN_PASSWORD",
+                        settings,
+                        "FIRST_ADMIN_PASSWORD",
                     )
 
                     if not admin_password:

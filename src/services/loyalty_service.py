@@ -36,6 +36,7 @@ class LoyaltyService:
             account.level = LoyaltyLevel.BEGINNER
 
     async def get_loyalty_info(self, user: User) -> LoyaltyAccount:
+        """Retrieve the loyalty account information for a user, creating one if it doesn't exist."""
         result = await self.session.execute(
             select(LoyaltyAccount).where(LoyaltyAccount.user_id == user.id)
         )

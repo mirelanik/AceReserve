@@ -1,3 +1,5 @@
+"""Pytest fixtures for testing the AceReserve application."""
+
 from decimal import Decimal
 import pytest
 from httpx import AsyncClient, ASGITransport

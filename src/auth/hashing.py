@@ -8,8 +8,10 @@ password_hash = PasswordHash.recommended()
 
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
+    """Verify a plain password against a hashed password."""
     return password_hash.verify(plain_password, hashed_password)
 
 
 def get_password_hash(password: str) -> str:
+    """Generate a secure hash for a plain password."""
     return password_hash.hash(password)

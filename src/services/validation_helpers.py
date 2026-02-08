@@ -149,6 +149,7 @@ class ValidationHelpers:
     async def validate_operating_hours(
         self, start_time: datetime, end_time: datetime
     ) -> None:
+        """Validate that reservation times are within club operating hours."""
         start = start_time.time()
         end = end_time.time()
 
@@ -173,6 +174,7 @@ class ValidationHelpers:
         max_capacity: int,
         user_id: int,
     ) -> None:
+        """Validate that group reservation does not exceed court capacity and user is not double-booked."""
         statement = select(Reservation).where(
             Reservation.court_number == court_number,
             Reservation.service_id == service_id,

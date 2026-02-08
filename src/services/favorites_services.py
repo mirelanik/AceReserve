@@ -1,3 +1,5 @@
+"""Service for managing user favorites, including courts and coaches."""
+
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlmodel import select
 from ..models.user import User, Role
@@ -11,11 +13,14 @@ from ..core.exceptions import (
 
 
 class FavoritesService:
+    """Service for managing user favorites, including courts and coaches."""
 
     def __init__(self, session: AsyncSession):
         self.session = session
 
     async def add_court_to_favorites(self, user: User, court_number: int) -> dict:
+        """Add a court to the user's favorites."""
+
         result = await self.session.execute(
             select(Court).where(Court.number == court_number)
         )
@@ -33,6 +38,8 @@ class FavoritesService:
         return {"message": f"Court {court_number} added to favorites."}
 
     async def remove_court_from_favorites(self, user: User, court_number: int) -> dict:
+        """Remove a court from the user's favorites."""
+
         result = await self.session.execute(
             select(Court).where(Court.number == court_number)
         )
@@ -53,9 +60,13 @@ class FavoritesService:
 
     @staticmethod
     def list_favorite_courts(user: User) -> list[Court]:
+        """List all courts in the user's favorites."""
+
         return user.favorite_courts
 
     async def add_coach_to_favorites(self, user: User, coach_id: int) -> dict:
+        """Add a coach to the user's favorites."""
+
         coach = await self.session.get(User, coach_id)
         if not coach or coach.role != Role.COACH:
             raise CoachNotFoundError()
@@ -72,6 +83,8 @@ class FavoritesService:
         return {"message": f"Coach {coach_id} added to favorites."}
 
     async def remove_coach_from_favorites(self, user: User, coach_id: int) -> dict:
+        """Remove a coach from the user's favorites."""
+
         coach = await self.session.get(User, coach_id)
         await self.session.refresh(user, ["favorite_coaches"])
         if not coach or coach.role != Role.COACH:
@@ -88,4 +101,6 @@ class FavoritesService:
 
     @staticmethod
     def list_favorite_coaches(user: User) -> list[User]:
+        """List all coaches in the user's favorites."""
+
         return user.favorite_coaches

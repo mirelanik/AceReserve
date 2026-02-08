@@ -71,18 +71,24 @@ class ReviewService:
         return review
 
     async def show_court_reviews(self, court_number: int) -> Sequence[Review]:
+        """Retrieve all reviews for a specific court."""
+
         result = await self.session.execute(
             select(Review).where(Review.court_number == court_number)
         )
         return result.scalars().all()
 
     async def show_service_reviews(self, service_id: int) -> Sequence[Review]:
+        """Retrieve all reviews for a specific service."""
+
         result = await self.session.execute(
             select(Review).where(Review.service_id == service_id)
         )
         return result.scalars().all()
 
     async def show_coach_reviews(self, coach_id: int) -> Sequence[Review]:
+        """Retrieve all reviews for a specific coach."""
+
         result = await self.session.execute(
             select(Review).where(Review.coach_id == coach_id)
         )

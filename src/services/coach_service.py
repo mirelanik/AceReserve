@@ -58,9 +58,11 @@ class CoachService:
 
     @staticmethod
     def get_services_by_coach(user: User) -> list[Service]:
+        """Get all services offered by the coach."""
         return user.services
 
     async def get_reservations_for_coach(self, user: User) -> Sequence[Reservation]:
+        """Get all reservations for services offered by the coach."""
         coach_services_ids = [s.id for s in user.services if s.id is not None]
 
         if not coach_services_ids:
@@ -92,6 +94,7 @@ class CoachService:
         return result.scalars().all()
 
     async def remove_service(self, service_id: int, current_user: User) -> dict:
+        """Remove a service by ID. Only the coach who offers the service or an admin can remove it."""
         service = await self.session.get(Service, service_id)
         if not service:
             raise ServiceNotFoundError()

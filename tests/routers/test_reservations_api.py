@@ -10,7 +10,9 @@ async def test_api_create_reservation(client, session, sample_user, sample_court
     merged_user = await session.merge(sample_user)
     merged_court = await session.merge(sample_court)
 
-    start_time = datetime.now(timezone.utc) + timedelta(days=1)
+    start_time = datetime.now(timezone.utc).replace(hour=12, minute=0) + timedelta(
+        days=1
+    )
 
     payload = {
         "court_number": merged_court.number,
@@ -36,7 +38,9 @@ async def test_api_create_reservation(client, session, sample_user, sample_court
 
 @pytest.mark.asyncio
 async def test_api_create_reservation_unauthorized(client, sample_court):
-    start_time = datetime.now(timezone.utc) + timedelta(days=1)
+    start_time = datetime.now(timezone.utc).replace(hour=12, minute=0) + timedelta(
+        days=1
+    )
     payload = {
         "court_number": sample_court.number,
         "start_time": start_time.isoformat(),
@@ -67,7 +71,9 @@ async def test_api_get_my_reservations(client, session, sample_user, sample_cour
     merged_court = await session.merge(sample_court)
 
     service = ReservationService(session)
-    start_time = datetime.now(timezone.utc) + timedelta(days=1)
+    start_time = datetime.now(timezone.utc).replace(hour=12, minute=0) + timedelta(
+        days=1
+    )
     create_data = ReservationCreate(
         court_number=merged_court.number, start_time=start_time, duration_minutes=60
     )
@@ -90,7 +96,9 @@ async def test_api_cancel_reservation(client, session, sample_user, sample_court
     merged_court = await session.merge(sample_court)
 
     service = ReservationService(session)
-    start_time = datetime.now(timezone.utc) + timedelta(days=2)
+    start_time = datetime.now(timezone.utc).replace(hour=12, minute=0) + timedelta(
+        days=2
+    )
     res = await service.process_reservation_creation(
         merged_user,
         ReservationCreate(
@@ -112,7 +120,9 @@ async def test_api_edit_reservation(client, session, sample_user, sample_court):
     merged_court = await session.merge(sample_court)
 
     service = ReservationService(session)
-    start_time = datetime.now(timezone.utc) + timedelta(days=3)
+    start_time = datetime.now(timezone.utc).replace(hour=12, minute=0) + timedelta(
+        days=3
+    )
     reservation = await service.process_reservation_creation(
         merged_user,
         ReservationCreate(
@@ -144,7 +154,9 @@ async def test_api_cancel_others_reservation_forbidden(
     merged_court = await session.merge(sample_court)
 
     service = ReservationService(session)
-    start_time = datetime.now(timezone.utc) + timedelta(days=4)
+    start_time = datetime.now(timezone.utc).replace(hour=12, minute=0) + timedelta(
+        days=4
+    )
     reservation = await service.process_reservation_creation(
         merged_victim,
         ReservationCreate(
